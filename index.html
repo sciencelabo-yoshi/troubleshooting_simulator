@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>SNSトラブルシミュレーター</title>
+
+<style>
+body{
+  background:#b0b0b0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.phone{
+  width:375px;height:730px;margin:20px auto;
+  background:#000;border-radius:28px;
+  box-shadow:0 0 30px rgba(0,0,0,.4);
+  overflow:hidden;position:relative;
+}
+.statusbar{
+  height:28px;color:#fff;font-size:12px;
+  padding:0 12px;display:flex;
+  justify-content:space-between;align-items:center;
+}
+.home{
+  position:absolute;top:28px;left:0;
+  width:100%;height:calc(100% - 28px);
+  background:linear-gradient(180deg,#5f9cff,#a1c4fd);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:18px;padding:30px 20px;
+}
+.app{text-align:center;color:#fff;font-size:12px;cursor:pointer;}
+.app-icon{
+  width:64px;height:64px;border-radius:16px;
+  background:#000;font-size:30px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 6px;
+}
+
+/* Instagramアイコン */
+.app-icon.instagram{
+  background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af);
+  font-size:0;
+}
+.app-icon.instagram svg{
+  width:34px;
+  height:34px;
+  fill:#fff;
+}
+
+.appscreen{
+  position:absolute;top:28px;left:0;
+  width:100%;height:calc(100% - 28px);
+  background:#fff;display:flex;
+  flex-direction:column;overflow:hidden;
+}
+.hidden{display:none}
+.header{
+  height:44px;display:flex;align-items:center;
+  border-bottom:1px solid #e6ecf0;font-weight:700;
+}
+.back{width:44px;text-align:center;cursor:pointer;}
+.title{flex:1;text-align:center;}
+.progress{height:6px;background:#e6ecf0;}
+.timeline{
+  flex:1;overflow-y:auto;
+  padding:0 12px;font-size:15px;
+}
+
+.story.me .story-ring{
+  background:none;
+  padding:0;
+}
+.story.me .story-inner{
+  border:1px solid #ccc;
+}
+
+
+/* ===== Instagram風 ===== */
+
+/* ストーリー */
+.stories{
+  display:flex;
+  gap:14px;
+  padding:10px 12px;
+  overflow-x:auto;
+  border-bottom:1px solid #e6ecf0;
+}
+.story{
+  text-align:center;
+  font-size:11px;
+  color:#333;
+  cursor:pointer;
+}
+.story-ring{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af);
+  padding:3px;
+  margin-bottom:4px;
+}
+.story-inner{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  background:#ddd;
+}
+
+/* フィード */
+.insta-feed{padding:12px;}
+.insta-post{
+  border:1px solid #ddd;
+  border-radius:10px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.insta-header{
+  padding:8px;
+  font-weight:700;
+}
+.insta-photo{
+  height:180px;
+  background:linear-gradient(135deg,#ddd,#bbb);
+}
+.insta-actions{
+  padding:8px;
+  font-size:14px;
+  color:#555;
+}
+
+/* ===== ストーリー再生（悪口動画風） ===== */
+.story-view{
+  position:absolute;
+  top:28px;left:0;
+  width:100%;height:calc(100% - 28px);
+  background:#000;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  z-index:50;
+}
+.story-view.hidden{display:none;}
+.story-top{
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+}
+.story-video{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#111,#333);
+  position:relative;
+}
+.story-text{
+  position:absolute;
+  bottom:100px;
+  left:20px;
+  right:20px;
+  font-size:22px;
+  font-weight:700;
+  line-height:1.4;
+  text-shadow:0 0 8px #000;
+}
+.story-close{
+  cursor:pointer;
+}
+
+/* ===== X既存 ===== */
+.post,.reply{
+  display:flex;gap:10px;
+  padding:12px 0;border-bottom:1px solid #e6ecf0;
+}
+.reply{border-bottom:none;}
+.icon{width:42px;height:42px;border-radius:50%;background:#1d9bf0;}
+.reply .icon{width:32px;height:32px;background:#aab8c2;}
+.body{flex:1;cursor:pointer;}
+.name{font-weight:700;}
+.id{color:#536471;font-size:13px;margin-left:4px;}
+.text{margin:6px 0;white-space:pre-wrap;}
+.meta{
+  display:flex;flex-wrap:wrap;
+  gap:12px;font-size:13px;
+  color:#536471;margin-top:6px;
+}
+.replies-box{display:none;margin-top:6px;}
+
+.compose{border-top:1px solid #e6ecf0;padding:8px;}
+.compose textarea{
+  width:100%;height:70px;resize:none;
+  border:1px solid #ccc;border-radius:10px;padding:6px;
+}
+.compose select{
+  width:100%;padding:6px;margin-bottom:6px;
+  border-radius:8px;border:1px solid #ccc;
+}
+.compose button{
+  width:100%;margin-top:6px;padding:10px;
+  border:none;border-radius:999px;
+  background:#1d9bf0;color:#fff;
+}
+
+.warning{
+  background:#fff3cd;
+  border:1px solid #ffecb5;
+  color:#664d03;
+  padding:10px;
+  margin:10px 0;
+  font-size:14px;
+  border-radius:8px;
+}
+.warning strong{color:#d00000}
+
+
+.story-bottom{
+  height:64px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  background:rgba(0,0,0,0.6);
+}
+.story-message{
+  flex:none;        /* 横いっぱいをやめる */
+  width: 70%;
+  height:44px;
+  border-radius:999px;
+  border:1px solid #555;
+  background:#111;
+  color:#fff;
+  padding:0 14px;
+  font-size:14px;
+}
+.story-like{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:1px solid #555;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  cursor:pointer;
+}
+.story-like.active{
+  color:#ff4d6d;
+  border-color:#ff4d6d;
+}
+
+/* ===== ストーリー下部アクション：画面下固定（上書き） ===== */
+.story-bottom{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+
+  background: rgba(0,0,0,0.75);
+  box-sizing: border-box;
+}
+
+
+/* ===== ストーリー下部アクション：コンパクト版 ===== */
+.story-bottom{
+  height: 50px;          /* 64 → 52 */
+  padding: 6px 8px;
+}
+
+.story-message{
+  height: 30px;          /* 44 → 36 */
+  font-size: 13px;       /* 少し小さく */
+  padding: 0 12px;
+}
+
+.story-like{
+  width: 28px;           /* 44 → 36 */
+  height: 28px;
+  font-size: 12px;       /* 20 → 18 */
+}
+
+/* ===== ストーリー下部：中央寄せ＋幅調整 ===== */
+.story-bottom{
+  justify-content: center;   /* 中央寄せ */
+}
+
+.story-message{
+  flex: none;                /* 伸びるのを止める */
+  width: 200px;              /* ← 好みで調整可（180〜220くらい） */
+}
+
+
+/* ===== ストーリー警告オーバーレイ ===== */
+.story-warning{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 28px);
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.story-warning.hidden{
+  display: none;
+}
+
+.story-warning-box{
+  background: #fff;
+  color: #000;
+  width: 85%;
+  max-width: 320px;
+  border-radius: 14px;
+  padding: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  text-align: center;
+}
+
+.story-warning-box strong{
+  color: #d00000;
+}
+
+/* ===== ストーリー追加アイコン（＋） ===== */
+.story-ring{
+  position: relative;
+}
+
+.story-add{
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#0095f6;
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #fff;
+  box-sizing:border-box;
+}
+
+/* ホーム全体はクリック無効 */
+.home{
+  pointer-events: none;
+}
+
+/* アイコンだけクリック有効 */
+.app-icon{
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+
+
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+  <div class="statusbar"><span>20:15</span><span>📶 🔋</span></div>
+
+  <!-- ホーム -->
+  <div class="home" id="home">
+
+
+    <div class="app" onclick="openX()">
+      <div class="app-icon">N</div>N
+    </div>
+
+    <div class="app" onclick="openInstagram()">
+      <div class="app-icon instagram">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7z"/>
+        </svg>
+      </div>
+      Narastagram
+    </div>
+  </div>
+
+
+
+  <!-- X -->
+  <div class="appscreen hidden" id="xapp">
+    <div class="header">
+      <div class="back" onclick="backHome()">←</div>
+      <div class="title">N</div>
+      <div class="back"></div>
+    </div>
+    <div class="progress"><span id="bar"></span></div>
+    <div class="timeline" id="timeline"></div>
+    <div class="compose">
+      <select id="exampleSelect" onchange="applyExample()">
+        <option value="">炎上例を選択（教材用）</option>
+      </select>
+      <textarea id="textInput" placeholder="いまどうしてる？"></textarea>
+      <button onclick="post()">投稿</button>
+    </div>
+  </div>
+
+  <!-- Instagram -->
+  <div class="appscreen hidden" id="insta">
+    <div class="header">
+      <div class="back" onclick="backHome()">←</div>
+      <div class="title">Narastagram</div>
+      <div class="back"></div>
+    </div>
+
+    <div class="stories">
+
+<div class="story me" onclick="event.stopPropagation()">
+  <div class="story-ring">
+    <div class="story-inner"></div>
+    <div class="story-add">＋</div>
+  </div>
+  あなた
+</div>
+
+      <div class="story" onclick="openStory()">
+
+
+
+
+
+
+
+
+
+
+
+        <div class="story-ring"><div class="story-inner"></div></div>A
+      </div>
+      
+    </div>
+
+    <div class="insta-feed">
+      <div class="insta-post">
+        <div class="insta-header">あなた</div>
+        <div class="insta-photo"></div>
+        <div class="insta-actions">❤️ 12　💬 3</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ストーリー再生画面 -->
+  <div class="story-view hidden" id="storyView">
+
+
+<div class="story-warning hidden" id="storyWarning">
+  <div class="story-warning-box">
+    <strong>その操作、本当に大丈夫？</strong><br><br>
+    ストーリーへの反応やメッセージは、<br>
+    書かれた相手を傷つけたり、<br>
+    その行為に加担すてしまう<br>
+    可能性があります。<br><br>
+    <em>反応せずに信頼できる大人に相談してください。</em>
+  </div>
+</div>
+
+
+
+
+
+
+    <div class="story-top">
+      <div>Aのストーリー</div>
+      <div class="story-close" onclick="closeStory()">✕</div>
+    </div>
+    <div class="story-video">
+      <div class="story-text">
+        あの人マジで無理。きらい。<br>
+  
+      </div>
+<div class="story-bottom">
+  <input class="story-message" type="text" placeholder="メッセージを送信">
+  <div class="story-like" onclick="toggleLike(this)">♡</div>
+</div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const home=document.getElementById("home");
+const xapp=document.getElementById("xapp");
+const insta=document.getElementById("insta");
+const storyView=document.getElementById("storyView");
+const timeline=document.getElementById("timeline");
+const bar=document.getElementById("bar");
+const textInput=document.getElementById("textInput");
+const exampleSelect=document.getElementById("exampleSelect");
+
+/* 炎上例（type付き） */
+const flameExamples=[
+  {label:"① 差別的発言", type:"discrimination", text:"正直言って、税金使ってまで外国人を支援する意味が分からない。"},
+  {label:"② バイトテロ", type:"baito", text:"バイト中だけど、店の冷蔵庫に入ってみたw"},
+  {label:"③ 弱者蔑視", type:"weak", text:"努力しない人を助ける必要ってある？"},
+  {label:"④ 災害不謹慎", type:"disaster", text:"また災害？もう慣れた。"},
+  {label:"⑤ 晒し投稿", type:"expose", text:"この店員ひどい。名前も分かった。"},
+  {label:"⑥ 職業偏見", type:"job", text:"○○職ってこの程度だよね。"}
+];
+
+/* ★ 警告文（完全保持） */
+const warningMessages={
+  discrimination:`
+    ・差別的言動として問題視される可能性があります<br>
+    ・<b>刑法230条（名誉毀損）</b>に抵触する場合があります<br>
+    ・<b>奈良県人権尊重の社会づくり条例</b>の趣旨に反すると判断される可能性があります<br>
+    ・<b>京都府人権尊重の共生社会づくり条例</b>の趣旨に反する行為とみなされる場合があります
+  `,
+  baito:`
+    ・業務妨害として企業が対応する可能性があります<br>
+    ・<b>刑法233条（信用毀損・業務妨害）</b>に抵触する場合があります<br>
+    ・契約違反や就業規則違反として処分されることがあります
+  `,
+  weak:`
+    ・人格否定として炎上が長期化する可能性があります<br>
+    ・<b>刑法230条（名誉毀損）</b>に該当する場合があります
+  `,
+  disaster:`
+    ・被災者感情を著しく害する表現として批判を受けます<br>
+    ・<b>奈良県人権尊重の社会づくり条例</b>の趣旨に反する行為と判断される可能性があります
+  `,
+  expose:`
+    ・個人情報の公開として重大な問題になります<br>
+    ・<b>刑法230条（名誉毀損）</b>、<b>民法709条（不法行為）</b>に抵触する可能性があります<br>
+    ・<b>京都府個人情報保護条例</b>の趣旨に反すると判断される場合があります
+  `,
+  job:`
+    ・職業差別として問題視される可能性があります<br>
+    ・<b>奈良県人権尊重の社会づくり条例</b>、<b>京都府人権尊重の共生社会づくり条例</b>の趣旨に反する行為とみなされる場合があります
+  `,
+  default:`
+    ・削除後も拡散・批判が続く可能性があります<br>
+    ・内容によっては法律や条例に抵触する場合があります
+  `
+};
+
+flameExamples.forEach((ex,i)=>{
+  const o=document.createElement("option");
+  o.value=i;
+  o.textContent=ex.label;
+  exampleSelect.appendChild(o);
+});
+
+function applyExample(){
+  if(exampleSelect.value==="")return;
+  textInput.value=flameExamples[exampleSelect.value].text;
+}
+
+const normalComments=["大丈夫？","不用意では","燃えそう","誤解される"];
+const harshComments=["アウト","魚拓済","特定班","通報しました"];
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+
+function openX(){
+  home.classList.add("hidden");
+  insta.classList.add("hidden");
+  xapp.classList.remove("hidden");
+}
+function openInstagram(){
+  home.classList.add("hidden");
+  xapp.classList.add("hidden");
+  insta.classList.remove("hidden");
+}
+function backHome(){
+  xapp.classList.add("hidden");
+  insta.classList.add("hidden");
+  home.classList.remove("hidden");
+}
+
+function openStory(){
+  storyView.classList.remove("hidden");
+}
+function closeStory(){
+  storyView.classList.add("hidden");
+}
+
+function post(){
+  const t=textInput.value.trim();
+  if(!t)return;
+
+  const type=exampleSelect.value!=="" ? flameExamples[exampleSelect.value].type : "default";
+  const state={severity:0,views:0,replies:0,type};
+
+  const postDiv=document.createElement("div");
+  postDiv.className="post";
+  postDiv.innerHTML=`
+    <div class="icon"></div>
+    <div class="body">
+      <div class="name">あなた<span class="id">@user</span></div>
+      <div class="text">${t}</div>
+      <div class="meta">
+        <span class="views">👁 0</span>
+        <span class="replies">💬 0</span>
+        <span class="reposts">🔁 0</span>
+        <span class="likes">❤️ 0</span>
+        <span class="delete" style="color:#f4212e;cursor:pointer;">🗑 削除</span>
+      </div>
+      <div class="replies-box"></div>
+    </div>
+  `;
+  timeline.prepend(postDiv);
+
+  const repliesBox=postDiv.querySelector(".replies-box");
+  postDiv.querySelector(".body").onclick=()=>{
+    repliesBox.style.display=repliesBox.style.display==="block"?"none":"block";
+  };
+
+  const meta={
+    views:postDiv.querySelector(".views"),
+    replies:postDiv.querySelector(".replies"),
+    reposts:postDiv.querySelector(".reposts"),
+    likes:postDiv.querySelector(".likes")
+  };
+
+  const timer=setInterval(()=>{
+    const pool=state.severity<40?normalComments:harshComments;
+    repliesBox.insertAdjacentHTML("beforeend",`
+      <div class="reply">
+        <div class="icon"></div>
+        <div class="body">
+          <div class="name">匿名<span class="id">@xxxx</span></div>
+          <div class="text">${pool[rand(0,pool.length-1)]}</div>
+        </div>
+      </div>
+    `);
+
+    state.replies++;
+    state.severity=Math.min(100,state.severity+2);
+    const inc=state.severity<30?rand(5,20):state.severity<60?rand(50,200):rand(500,3000);
+    state.views+=inc;
+
+    meta.views.textContent="👁 "+state.views.toLocaleString();
+    meta.replies.textContent="💬 "+state.replies;
+    meta.reposts.textContent="🔁 "+Math.floor(state.views/80);
+    meta.likes.textContent="❤️ "+Math.floor(state.views/25);
+  },600);
+
+  postDiv.querySelector(".delete").onclick=(e)=>{
+    e.stopPropagation();
+    clearInterval(timer);
+    postDiv.remove();
+
+    const warn=document.createElement("div");
+    warn.className="warning";
+    warn.innerHTML=`
+      <strong>投稿は削除されました</strong><br><br>
+      【この投稿内容で起こりうること】<br>
+      ${warningMessages[state.type]||warningMessages.default}<br><br>
+      <em>「消した＝なかったこと」にはなりません。</em>
+      <em>また、匿名であっても<b>発信者情報開示請求</b>により投稿者が特定される場合があります。</em>
+    `;
+    timeline.prepend(warn);
+  };
+
+  textInput.value="";
+  exampleSelect.value="";
+}
+
+function toggleLike(el){
+  showStoryWarning();
+}
+
+
+const storyWarning = document.getElementById("storyWarning");
+
+/* 警告表示 */
+function showStoryWarning(){
+  storyWarning.classList.remove("hidden");
+}
+
+/* 警告をタップで閉じる */
+storyWarning.addEventListener("click", ()=>{
+  storyWarning.classList.add("hidden");
+});
+
+/* メッセージ欄クリックで警告 */
+document.querySelector(".story-message")
+  .addEventListener("focus", showStoryWarning);
+
+/* ♡クリックで警告（既存処理は保持） */
+const originalToggleLike = toggleLike;
+toggleLike = function(el){
+  originalToggleLike(el);
+  showStoryWarning();
+};
+
+
+
+
+</script>
+
+</body>
+</html>
