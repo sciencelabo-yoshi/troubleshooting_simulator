@@ -508,28 +508,34 @@ body{
   transform-origin: center center;
 }
 
-/* PC・プロジェクタ */
-@media (min-width: 1024px){
-  .phone{
-    transform: scale(1.2);
-  }
+
+
+<script>
+function autoScalePhone(){
+  const phone = document.querySelector(".phone");
+  if(!phone) return;
+
+  const designW = 375;
+  const designH = 730;
+
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // 縦横どちらか小さい方に合わせる
+  const scale = Math.min(
+    vw / designW,
+    vh / designH
+  );
+
+  phone.style.transform = `scale(${scale})`;
 }
 
-/* タブレット */
-@media (max-width: 1023px) and (min-width: 600px){
-  .phone{
-    transform: scale(1);
-  }
-}
+// 初期実行
+autoScalePhone();
 
-/* スマホ */
-@media (max-width: 599px){
-  .phone{
-    transform: scale(0.85);
-  }
-}
-
-
+// 画面サイズ変更時も自動調整
+window.addEventListener("resize", autoScalePhone);
+</script>
 
 
 
