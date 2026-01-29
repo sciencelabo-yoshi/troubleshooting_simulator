@@ -248,6 +248,34 @@ body{
   border-color:#ff4d6d;
 }
 
+
+
+/* 通知バッジ */
+.badge{
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  background:#f4212e;
+  color:#fff;
+  font-size:11px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+}
+.app-icon{
+  position:relative;
+}
+
+
+
+
+
+
+
 /* ===== ストーリー下部アクション：画面下固定（上書き） ===== */
 .story-bottom{
   position: absolute;
@@ -365,22 +393,183 @@ body{
 }
 
 
+/* DM通知バー */
+.dm-notice{
+  background:#1d9bf0;
+  color:#fff;
+  padding:10px;
+  font-size:14px;
+  text-align:center;
+  cursor:pointer;
+}
+
+
+/* ===== DM返信（追加） ===== */
+.dm-reply{
+  margin:8px 0;
+  padding:10px;
+  background:#e8f5ff;
+  border-radius:10px;
+  font-size:14px;
+}
+
+.dm-reply.me{
+  background:#d1ffd6;
+  text-align:right;
+}
+
+
+
+
+/* ===== DMメッセージ表示調整（追加） ===== */
+
+/* 共通（吹き出し風） */
+.dm-reply{
+  max-width: 75%;          /* 横幅を制限 */
+  margin: 6px 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 14px;         /* 相手メッセージはやや小さめ */
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* 相手（左寄せ） */
+.dm-reply:not(.me){
+  background: #f1f3f5;
+  color: #000;
+  margin-right: auto;     /* 左寄せ */
+  text-align: left;
+}
+
+/* 自分（右寄せ・少し大きく） */
+.dm-reply.me{
+  background: #d1ffd6;
+  color: #000;
+  margin-left: auto;      /* 右寄せ */
+  text-align: left;       /* 文章は左揃えのまま */
+  font-size: 15px;        /* 自分の方を少し大きく */
+}
+
+
+
+/* ===== 初期DM（相手）の表示統一（追加） ===== */
+
+/* 最初に表示されるDM（warning付き）を相手DM扱いに */
+.dm.warning{
+  max-width: 75%;
+  margin: 6px auto 6px 0;   /* 左寄せ */
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f1f3f5;     /* 相手DMと同じ背景色 */
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+  color: #000;
+  border: none;            /* warning枠感を消す */
+}
+
+/* 中の文字装飾もDM風に */
+.dm.warning .from{
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.dm.warning .text{
+  white-space: pre-wrap;
+}
+
+
+
+
+/* ===== 添付画像（投稿・DM共通） ===== */
+.attached-image{
+  margin-top:8px;
+  border-radius:12px;
+  max-width:100%;
+  height:auto;
+  border:1px solid #ddd;
+}
+
+
+
+/* ===== 画面サイズに応じて自動スケーリング ===== */
+.viewport{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* phoneは設計サイズのまま */
+.phone{
+  transform-origin: center center;
+}
+
+/* PC・プロジェクタ */
+@media (min-width: 1024px){
+  .phone{
+    transform: scale(1.2);
+  }
+}
+
+/* タブレット */
+@media (max-width: 1023px) and (min-width: 600px){
+  .phone{
+    transform: scale(1);
+  }
+}
+
+/* スマホ */
+@media (max-width: 599px){
+  .phone{
+    transform: scale(0.85);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 </style>
 </head>
 
 <body>
-
+ <div class="viewport">
 <div class="phone">
+
+
   <div class="statusbar"><span>20:15</span><span>📶 🔋</span></div>
 
   <!-- ホーム -->
   <div class="home" id="home">
 
 
-    <div class="app" onclick="openX()">
-      <div class="app-icon">N</div>N
-    </div>
+
+
+
+   <div class="app" onclick="openX()">
+  <div class="app-icon">
+    N
+    <span class="badge">1</span>
+  </div>
+  N
+</div>
+
+
+
+
+
 
     <div class="app" onclick="openInstagram()">
       <div class="app-icon instagram">
@@ -395,17 +584,103 @@ body{
 
 
   <!-- X -->
+
+<!-- DM専用画面 -->
+<div class="appscreen hidden" id="dmapp">
+  <div class="header">
+    <div class="back" onclick="backToX()">←</div>
+    <div class="title">ダイレクトメッセージ</div>
+    <div class="back"></div>
+  </div>
+
+  <div class="timeline">
+    <div class="dm warning">
+      <div class="from">知らない人<span class="id">@job_support</span></div>
+      <div class="text">
+簡単に稼げる仕事を探していませんか？
+
+・スマホだけ
+・即日◯万円
+・年齢不問
+
+興味あれば返信ください。
+※身分証必須
+      </div>
+    </div>
+  </div>
+
+<!-- DM返信入力欄（追加） -->
+<div class="compose" id="dmCompose">
+  <textarea id="dmInput" placeholder="返信を書く…"></textarea>
+  <button onclick="sendDM()">送信</button>
+</div>
+
+
+</div>
+
+
+
+
+
   <div class="appscreen hidden" id="xapp">
     <div class="header">
+
       <div class="back" onclick="backHome()">←</div>
       <div class="title">N</div>
       <div class="back"></div>
     </div>
     <div class="progress"><span id="bar"></span></div>
+
+<div class="dm-notice hidden" id="dmNotice">
+  📩 新しいダイレクトメッセージがあります
+</div>
+
+
+
+
+<div class="timeline hidden" id="dmScreen">
+  <div class="dm warning">
+    <div class="from">知らない人<span class="id">@job_support</span></div>
+    <div class="text">
+簡単に稼げる仕事を探していませんか？
+
+・スマホだけ
+・即日◯万円
+・年齢不問
+
+興味あれば返信ください。
+※身分証必須
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
     <div class="timeline" id="timeline"></div>
-    <div class="compose">
-      <select id="exampleSelect" onchange="applyExample()">
-        <option value="">炎上例を選択（教材用）</option>
+
+
+   <div class="compose">
+
+
+
+  <input type="file" id="postImage" accept="image/*">
+
+
+
+
+
+  <select id="exampleSelect" onchange="applyExample()">
+
+
+
+
+
+        <option value="">炎上例（教材用）を選択　※通常投稿は選択しない</option>
       </select>
       <textarea id="textInput" placeholder="いまどうしてる？"></textarea>
       <button onclick="post()">投稿</button>
@@ -505,6 +780,16 @@ const timeline=document.getElementById("timeline");
 const bar=document.getElementById("bar");
 const textInput=document.getElementById("textInput");
 const exampleSelect=document.getElementById("exampleSelect");
+const dmapp = document.getElementById("dmapp");
+
+
+
+
+
+const dmNotice = document.getElementById("dmNotice");
+const dmScreen = document.getElementById("dmScreen");
+
+
 
 /* 炎上例（type付き） */
 const flameExamples=[
@@ -568,21 +853,71 @@ const normalComments=["大丈夫？","不用意では","燃えそう","誤解さ
 const harshComments=["アウト","魚拓済","特定班","通報しました"];
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
+
+
+
+
 function openX(){
   home.classList.add("hidden");
   insta.classList.add("hidden");
   xapp.classList.remove("hidden");
+
+  // ★ まずは通常タイムライン
+  timeline.classList.remove("hidden");
+  dmScreen.classList.add("hidden");
+
+  // ★ DMが来ている通知だけ表示
+  dmNotice.classList.remove("hidden");
 }
+
+
+
+
+
+dmNotice.onclick = ()=>{
+  dmNotice.classList.add("hidden");
+
+  
+  // X → DM専用画面へ
+  xapp.classList.add("hidden");
+  dmapp.classList.remove("hidden");
+};
+
+
+
+
+function backToX(){
+  dmapp.classList.add("hidden");
+  xapp.classList.remove("hidden");
+}
+
+
+
+
+function backHome(){
+  xapp.classList.add("hidden");
+  insta.classList.add("hidden");
+  dmapp.classList.add("hidden");
+  home.classList.remove("hidden");
+
+  dmNotice.classList.add("hidden");
+}
+
+
+
+
 function openInstagram(){
   home.classList.add("hidden");
   xapp.classList.add("hidden");
   insta.classList.remove("hidden");
 }
-function backHome(){
-  xapp.classList.add("hidden");
-  insta.classList.add("hidden");
-  home.classList.remove("hidden");
-}
+
+
+
+
+
+
+
 
 function openStory(){
   storyView.classList.remove("hidden");
@@ -592,20 +927,30 @@ function closeStory(){
 }
 
 function post(){
+ let timer = null;
   const t=textInput.value.trim();
   if(!t)return;
 
+
+
+
   const type=exampleSelect.value!=="" ? flameExamples[exampleSelect.value].type : "default";
   const state={severity:0,views:0,replies:0,type};
-
   const postDiv=document.createElement("div");
   postDiv.className="post";
   postDiv.innerHTML=`
     <div class="icon"></div>
     <div class="body">
       <div class="name">あなた<span class="id">@user</span></div>
+
+
       <div class="text">${t}</div>
-      <div class="meta">
+<img class="attached-image" style="display:none;">
+<div class="meta">
+
+
+
+
         <span class="views">👁 0</span>
         <span class="replies">💬 0</span>
         <span class="reposts">🔁 0</span>
@@ -615,7 +960,31 @@ function post(){
       <div class="replies-box"></div>
     </div>
   `;
+
+
+
   timeline.prepend(postDiv);
+
+
+
+// ===== 画像添付処理（ここだけ）=====
+const imageInput = document.getElementById("postImage");
+const imageFile = imageInput.files[0];
+
+if(imageFile){
+  const img = postDiv.querySelector(".attached-image");
+  const reader = new FileReader();
+  reader.onload = e => {
+    img.src = e.target.result;
+    img.style.display = "block";
+  };
+  reader.readAsDataURL(imageFile);
+  imageInput.value = ""; // 次の投稿に残さない
+}
+
+
+
+
 
   const repliesBox=postDiv.querySelector(".replies-box");
   postDiv.querySelector(".body").onclick=()=>{
@@ -629,33 +998,126 @@ function post(){
     likes:postDiv.querySelector(".likes")
   };
 
-  const timer=setInterval(()=>{
-    const pool=state.severity<40?normalComments:harshComments;
-    repliesBox.insertAdjacentHTML("beforeend",`
+
+
+
+
+
+ if (type === "default") {
+  // ===== 炎上しない投稿 =====
+  // ===== 炎上しない投稿 =====
+const maxComments = rand(3, 6);
+let posted = 0;
+let likes = rand(2, 6);
+
+const timer = setInterval(() => {
+
+  // コメント（20未満）
+  if (posted < maxComments && state.replies < 19) {
+    repliesBox.insertAdjacentHTML("beforeend", `
+      <div class="reply">
+        <div class="icon"></div>
+        <div class="body">
+          <div class="name">フォロワー<span class="id">@friend</span></div>
+          <div class="text">${normalComments[rand(0, normalComments.length - 1)]}</div>
+        </div>
+      </div>
+    `);
+    posted++;
+    state.replies++;
+  }
+
+  // いいね（20未満）
+  if (likes < 19) {
+    likes += rand(1, 2);
+    if (likes > 19) likes = 19;
+  }
+
+  // 見た数（20未満）
+  if (state.views < 19) {
+    state.views += rand(1, 4);
+    if (state.views > 19) state.views = 19;
+  }
+
+  meta.views.textContent   = "👁 " + state.views;
+  meta.replies.textContent = "💬 " + state.replies;
+  meta.reposts.textContent = "🔁 " + rand(0, 2);
+  meta.likes.textContent   = "❤️ " + likes;
+
+  // すべて上限に達したら停止
+  if (state.views >= 19 && state.replies >= 19 && likes >= 19) {
+    clearInterval(timer);
+  }
+
+}, 900);
+
+
+
+
+
+
+  postDiv.querySelector(".delete").onclick = (e) => {
+    e.stopPropagation();
+    clearInterval(timer);
+    postDiv.remove();
+  };
+
+} else {
+  // ===== 炎上投稿（従来どおり）=====
+  const timer = setInterval(() => {
+    const pool = state.severity < 40 ? normalComments : harshComments;
+
+    repliesBox.insertAdjacentHTML("beforeend", `
       <div class="reply">
         <div class="icon"></div>
         <div class="body">
           <div class="name">匿名<span class="id">@xxxx</span></div>
-          <div class="text">${pool[rand(0,pool.length-1)]}</div>
+          <div class="text">${pool[rand(0, pool.length - 1)]}</div>
         </div>
       </div>
     `);
 
     state.replies++;
-    state.severity=Math.min(100,state.severity+2);
-    const inc=state.severity<30?rand(5,20):state.severity<60?rand(50,200):rand(500,3000);
-    state.views+=inc;
+    state.severity = Math.min(100, state.severity + 2);
 
-    meta.views.textContent="👁 "+state.views.toLocaleString();
-    meta.replies.textContent="💬 "+state.replies;
-    meta.reposts.textContent="🔁 "+Math.floor(state.views/80);
-    meta.likes.textContent="❤️ "+Math.floor(state.views/25);
-  },600);
+    const inc =
+      state.severity < 30 ? rand(5, 20) :
+      state.severity < 60 ? rand(50, 200) :
+      rand(500, 3000);
+
+    state.views += inc;
+
+    meta.views.textContent = "👁 " + state.views.toLocaleString();
+    meta.replies.textContent = "💬 " + state.replies;
+    meta.reposts.textContent = "🔁 " + Math.floor(state.views / 80);
+    meta.likes.textContent = "❤️ " + Math.floor(state.views / 25);
+  }, 600);
+
+  postDiv.querySelector(".delete").onclick = (e) => {
+    e.stopPropagation();
+    clearInterval(timer);
+    postDiv.remove();
+  };
+}
+
+
+
+
+
+
 
   postDiv.querySelector(".delete").onclick=(e)=>{
     e.stopPropagation();
     clearInterval(timer);
     postDiv.remove();
+
+
+
+
+
+
+
+
 
     const warn=document.createElement("div");
     warn.className="warning";
@@ -703,8 +1165,72 @@ toggleLike = function(el){
 
 
 
+/* ===== DM返信送信処理（安全版・追加） ===== */
+function sendDM(){
+  const input = document.getElementById("dmInput");
+  if(!input) return;
+
+  const text = input.value.trim();
+  if(!text) return;
+
+  const dmTimeline = document.querySelector("#dmapp .timeline");
+  if(!dmTimeline) return;
+
+  // 自分の返信
+  const reply = document.createElement("div");
+  reply.className = "dm-reply me";
+  reply.textContent = text;
+  dmTimeline.appendChild(reply);
+
+  input.value = "";
+  dmTimeline.scrollTop = dmTimeline.scrollHeight;
+
+  // 闇バイト追い込みDM（段階表示）
+  const messages = [
+`連絡ありがとうございます。
+詳しい内容を進めるため、以下の情報を送ってください。
+
+「氏名」
+「年齢」
+「住所」
+「身分証(学生証)の写真」`,
+
+`まだ情報が届いていません。
+すでにやり取りをしているため、
+途中でやめることはできません。`,
+
+`あなたのアカウント情報はすでに保存されます。`,
+
+`警察・学校・家族などへ
+相談・通報される可能性があります。
+
+あなたを守るためにも、
+今すぐ返信してください。`
+  ];
+
+  // 表示タイミング（ms）
+  const delays = [1200, 10000, 16000, 22000];
+
+  messages.forEach((msg, i) => {
+    const delay = delays[i] ?? (22000 + (i - 3) * 5000);
+
+    setTimeout(() => {
+      const dm = document.createElement("div");
+      dm.className = "dm-reply";
+      dm.textContent = msg;
+      dmTimeline.appendChild(dm);
+      dmTimeline.scrollTop = dmTimeline.scrollHeight;
+    }, delay);
+  });
+}
+
+
+
+
 
 </script>
 
 </body>
 </html>
+
+
