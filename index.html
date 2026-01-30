@@ -10,6 +10,25 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
+
+.phone{
+  width:375px;height:730px;margin:20px auto;
+  background:#000;border-radius:28px;
+  box-shadow:0 0 30px rgba(0,0,0,.4);
+  overflow:hidden;position:relative;
+}
+
+
+.statusbar{
+  height:28px;color:#fff;font-size:12px;
+  padding:0 12px;display:flex;
+  justify-content:space-between;align-items:center;
+}
+
+
+
+
+
 .home{
   position:absolute;top:28px;left:0;
   width:100%;height:calc(100% - 28px);
@@ -262,6 +281,9 @@ body{
 
 
 
+.compose-modal.hidden{
+  display: none !important;
+}
 
 
 
@@ -483,53 +505,205 @@ body{
 
 
 
-/* ===== 画面サイズに応じて自動スケーリング ===== */
-.viewport{
-  width: 100vw;
-  height: 100vh;
+/* ===== X 下部ナビゲーション ===== */
+.x-bottom-nav{
+  height: 52px;
+  border-top: 1px solid #e6ecf0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 22px;
+  background: #fff;
+}
+
+.x-bottom-nav span{
+  cursor: pointer;
+  color: #536471;
+}
+
+.x-bottom-nav span.active{
+  color: #1d9bf0;
+}
+
+
+.x-bottom-nav{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 52px;
+  border-top: 1px solid #e6ecf0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 22px;
+  background: #fff;
+  z-index: 30;
+}
+
+
+
+/* ===== X系画面は下部ナビ分の余白を確保 ===== */
+#xapp,
+#dmList,
+#dmRoom{
+  padding-bottom: 52px;   /* ナビの高さと同じ */
+  box-sizing: border-box;
+}
+
+
+.x-bottom-nav.hidden{
+  display: none !important;
+}
+
+
+/* ===== DM未読表示 ===== */
+.dm-item.unread{
+  background: transparent;
+}
+
+.dm-item.unread::before{
+  content:"●";
+  color:#1D9BF0;
+  font-size:10px;
+  margin-right:8px;
+}
+
+
+/* ===== 下部ナビ DM未読ドット ===== */
+#dmNav{
+  position: relative;
+}
+
+#dmNav.unread::after{
+  content:"●";
+  position:absolute;
+  top:4px;
+  right:-2px;
+  font-size:10px;
+  color:#1D9BF0;
+}
+
+
+/* ===== X風 右下＋ボタン ===== */
+.x-fab{
+  position: absolute;
+  right: 16px;
+  bottom: 70px;          /* 下部ナビにかぶらない */
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1d9bf0;
+  color: #fff;
+  font-size: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-}
-
-/* phoneは設計サイズのまま */
-.phone{
-  transform-origin: center center;
+  cursor: pointer;
+  z-index: 40;
 }
 
 
-
-<script>
-function autoScalePhone(){
-  const phone = document.querySelector(".phone");
-  if(!phone) return;
-
-  const designW = 375;
-  const designH = 730;
-
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-
-  // 縦横どちらか小さい方に合わせる
-  const scale = Math.min(
-    vw / designW,
-    vh / designH
-  );
-
-  phone.style.transform = `scale(${scale})`;
+.compose-modal{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 50;
 }
 
-// 初期実行
-autoScalePhone();
+.compose-box{
+  background: #fff;
+  width: 100%;
+  padding: 12px;
+  border-radius: 16px;
 
-// 画面サイズ変更時も自動調整
-window.addEventListener("resize", autoScalePhone);
-</script>
+  margin-bottom: 60px;   /* ← ここを増減 */
+}
+
+
+/* 旧投稿欄を非表示（＋方式に統一） */
+#xapp > .compose{
+  display: none;
+}
 
 
 
+.cancel-btn{
+  background: #e6ecf0;
+  border: none;
+  color: #0f1419;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 4px;   /* ← 四角 */
+  cursor: pointer;
+}
 
+
+.compose-top{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* キャンセル（左） */
+.cancel-btn{
+  background: none;
+  border: none;
+  color: #536471;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* 投稿（右） */
+.post-btn{
+  background: #1d9bf0;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 4px;   /* ← 四角 */
+  cursor: pointer;
+}
+
+
+#textInput{
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+#textInput{
+  resize: none;
+}
+
+#textInput{
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+}
+
+
+
+.text-wrap{
+  position: relative;
+}
+
+.text-wrap #exampleSelect{
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 12px;
+  padding: 2px 4px;
+  opacity: 0.85;
+}
+
+#textInput{
+  padding-top: 30px;
+}
 
 
 
@@ -541,10 +715,8 @@ window.addEventListener("resize", autoScalePhone);
 </head>
 
 <body>
- <div class="viewport">
+
 <div class="phone">
-
-
   <div class="statusbar"><span>20:15</span><span>📶 🔋</span></div>
 
   <!-- ホーム -->
@@ -557,7 +729,7 @@ window.addEventListener("resize", autoScalePhone);
    <div class="app" onclick="openX()">
   <div class="app-icon">
     N
-    <span class="badge">1</span>
+    <span class="badge" id="dmBadge">1</span>
   </div>
   N
 </div>
@@ -582,43 +754,92 @@ window.addEventListener("resize", autoScalePhone);
   <!-- X -->
 
 <!-- DM専用画面 -->
-<div class="appscreen hidden" id="dmapp">
+
+<!-- DM一覧画面 -->
+<div class="appscreen hidden" id="dmList">
+  <div class="header">
+    <div class="back" onclick="backToX()">←</div>
+    <div class="title">メッセージ</div>
+    <div class="back"></div>
+  </div>
+
+
+
+
+
+
+
+
+
+  <div class="timeline">
+    <div class="dm-item" id="dmItem_job" onclick="openDM('job_support')">
+
+      <div class="icon"></div>
+      <div class="body">
+        <div class="name">
+          知らない人 <span class="id">@job_support</span>
+        </div>
+        <div class="preview">
+          簡単に稼げる仕事を探していませんか？
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 個別DM画面 -->
+<div class="appscreen hidden" id="dmRoom">
+  <div class="header">
+    <div class="back" onclick="backToDMList()">←</div>
+    <div class="title" id="dmRoomTitle">DM</div>
+    <div class="back"></div>
+  </div>
+
+  <div class="timeline" id="dmTimeline"></div>
+
+  <div class="compose">
+    <textarea id="dmInput" placeholder="返信を書く…"></textarea>
+    <button onclick="sendDM()">送信</button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
   <div class="header">
     <div class="back" onclick="backToX()">←</div>
     <div class="title">ダイレクトメッセージ</div>
     <div class="back"></div>
   </div>
 
-  <div class="timeline">
-    <div class="dm warning">
-      <div class="from">知らない人<span class="id">@job_support</span></div>
-      <div class="text">
-簡単に稼げる仕事を探していませんか？
-
-・スマホだけ
-・即日◯万円
-・年齢不問
-
-興味あれば返信ください。
-※身分証必須
-      </div>
-    </div>
-  </div>
-
-<!-- DM返信入力欄（追加） -->
-<div class="compose" id="dmCompose">
-  <textarea id="dmInput" placeholder="返信を書く…"></textarea>
-  <button onclick="sendDM()">送信</button>
-</div>
 
 
-</div>
+
+
+
+
 
 
 
 
 
   <div class="appscreen hidden" id="xapp">
+
+
+
+
+
+
+
+
+
     <div class="header">
 
       <div class="back" onclick="backHome()">←</div>
@@ -634,19 +855,43 @@ window.addEventListener("resize", autoScalePhone);
 
 
 
-<div class="timeline hidden" id="dmScreen">
-  <div class="dm warning">
-    <div class="from">知らない人<span class="id">@job_support</span></div>
-    <div class="text">
-簡単に稼げる仕事を探していませんか？
 
-・スマホだけ
-・即日◯万円
-・年齢不問
 
-興味あれば返信ください。
-※身分証必須
+
+
+
+    <div class="timeline" id="timeline"></div>
+
+
+
+
+<div class="compose-modal hidden" id="composeModal">
+  
+
+<div class="compose-box">
+
+    <!-- 上部ボタン行 -->
+    <div class="compose-top">
+      <button class="cancel-btn" onclick="closeComposer()">キャンセル</button>
+      <button class="post-btn" onclick="submitPost()">投稿</button>
     </div>
+
+
+<div class="text-wrap">
+<select id="exampleSelect" onchange="applyExample()">
+  <option value="">炎上例（教材用）を選択　※通常投稿は選択しない</option>
+</select>
+</div>
+
+
+
+
+
+    <!-- 入力欄 -->
+    <textarea id="textInput" placeholder="いまどうしてる？"></textarea>
+    <input type="file" id="postImage" accept="image/*">
+<div id="exifInfo" style="font-size:13px;color:#d00000;margin-top:6px;"></div>
+
   </div>
 </div>
 
@@ -657,15 +902,14 @@ window.addEventListener("resize", autoScalePhone);
 
 
 
-    <div class="timeline" id="timeline"></div>
+
 
 
    <div class="compose">
 
 
 
-  <input type="file" id="postImage" accept="image/*">
-
+  
 
 
 
@@ -678,9 +922,61 @@ window.addEventListener("resize", autoScalePhone);
 
         <option value="">炎上例（教材用）を選択　※通常投稿は選択しない</option>
       </select>
-      <textarea id="textInput" placeholder="いまどうしてる？"></textarea>
+      <textarea id="textInput_old" placeholder="いまどうしてる？"></textarea>
+<input type="file" id="postImage_old" accept="image/*">
       <button onclick="post()">投稿</button>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+<!-- ＋投稿ボタン -->
+<div class="x-fab" onclick="openComposer()">＋</div>
+
+
+
+
+<div class="x-bottom-nav hidden" id="xBottomNav">
+  <span class="active" onclick="goXHome()">🏠</span>
+  <span onclick="alert('検索画面（教材用ダミー）')">🔍</span>
+  <span onclick="alert('通知画面（教材用ダミー）')">🔔</span>
+  <span id="dmNav" onclick="openDMList()">✉️</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   </div>
 
   <!-- Instagram -->
@@ -776,20 +1072,105 @@ const timeline=document.getElementById("timeline");
 const bar=document.getElementById("bar");
 const textInput=document.getElementById("textInput");
 const exampleSelect=document.getElementById("exampleSelect");
-const dmapp = document.getElementById("dmapp");
 
 
+const xBottomNav = document.getElementById("xBottomNav");
+
+function showXNav(){
+  xBottomNav.classList.remove("hidden");
+}
+
+function hideXNav(){
+  xBottomNav.classList.add("hidden");
+}
+
+// ★ 初期表示では必ず非表示
+hideXNav();
 
 
 
 const dmNotice = document.getElementById("dmNotice");
-const dmScreen = document.getElementById("dmScreen");
+
+
+
+
+
+let dmRead = false;   // ★ DMを読んだかどうか
+
+
+const dmTemplates = [
+  {
+    name: "知らない人",
+    id: "@job_support",
+    text: `簡単に稼げる仕事を探していませんか？
+
+・スマホだけ
+・即日◯万円
+・年齢不問
+
+興味あれば返信ください。
+※身分証必須`
+  },
+  {
+    name: "副業案内センター",
+    id: "@sidework_info",
+    text: `【限定案内】
+副業モニター募集のお知らせです。
+
+初期費用なし
+誰でも参加可能
+報酬は当日支払い
+
+詳細希望の方は返信してください。`
+  },
+  {
+    name: "投資サポート窓口",
+    id: "@invest_plus",
+    text: `投資に興味はありませんか？
+知人限定の情報です。
+
+元本保証あり
+リスクは最小限
+学生でも可能
+
+このDMは削除してください。`
+  },
+  {
+    name: "採用担当",
+    id: "@recruit_office",
+    text: `あなたのアカウントを見て連絡しました。
+特別なお仕事をご案内できます。
+
+条件が合えば高収入が可能です。
+まずは返信をお願いします。`
+  }
+];
+
+
+function getRandomDM(){
+  return dmTemplates[Math.floor(Math.random() * dmTemplates.length)];
+}
+
+
+
+
+
+
+
+
+
+
+let dmThreads = {};
+let currentDMUser = null;
+
+
+
 
 
 
 /* 炎上例（type付き） */
 const flameExamples=[
-  {label:"① 差別的発言", type:"discrimination", text:"正直言って、税金使ってまで外国人を支援する意味が分からない。"},
+  {label:"① 差別的発言", type:"discrimination", text:"正直言って、税金使ってまで外国人を支援する意味が分からない。〇〇人は支援するな！"},
   {label:"② バイトテロ", type:"baito", text:"バイト中だけど、店の冷蔵庫に入ってみたw"},
   {label:"③ 弱者蔑視", type:"weak", text:"努力しない人を助ける必要ってある？"},
   {label:"④ 災害不謹慎", type:"disaster", text:"また災害？もう慣れた。"},
@@ -852,19 +1233,36 @@ const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
 
 
-
 function openX(){
   home.classList.add("hidden");
   insta.classList.add("hidden");
   xapp.classList.remove("hidden");
+  showXNav();
 
-  // ★ まずは通常タイムライン
+  // 通常タイムライン表示
   timeline.classList.remove("hidden");
-  dmScreen.classList.add("hidden");
+ 
 
-  // ★ DMが来ている通知だけ表示
-  dmNotice.classList.remove("hidden");
+  // DM通知バー
+  if(!dmRead){
+    dmNotice.classList.remove("hidden");
+  }else{
+    dmNotice.classList.add("hidden");
+  }
+
+  // ★ DMリスト未読色制御（ここだけ）
+  const dmItem = document.getElementById("dmItem_job");
+  if(dmItem){
+    if(!dmRead){
+      dmItem.classList.add("unread");
+    }else{
+      dmItem.classList.remove("unread");
+    }
+  }
 }
+
+
+
 
 
 
@@ -872,32 +1270,40 @@ function openX(){
 
 dmNotice.onclick = ()=>{
   dmNotice.classList.add("hidden");
+  dmRead = true;
 
-  
-  // X → DM専用画面へ
   xapp.classList.add("hidden");
-  dmapp.classList.remove("hidden");
+  dmList.classList.remove("hidden");
 };
 
-
-
-
 function backToX(){
-  dmapp.classList.add("hidden");
+  dmList.classList.add("hidden");
+  dmRoom.classList.add("hidden");
   xapp.classList.remove("hidden");
+showXNav();
 }
-
-
-
 
 function backHome(){
   xapp.classList.add("hidden");
   insta.classList.add("hidden");
-  dmapp.classList.add("hidden");
+  dmList.classList.add("hidden");
+  dmRoom.classList.add("hidden");
   home.classList.remove("hidden");
+  hideXNav();
 
-  dmNotice.classList.add("hidden");
+  if(dmRead){
+    const badge = document.getElementById("dmBadge");
+    if(badge) badge.style.display = "none";
+    scheduleNewDM();
+  }
 }
+
+
+
+
+
+
+
 
 
 
@@ -906,6 +1312,7 @@ function openInstagram(){
   home.classList.add("hidden");
   xapp.classList.add("hidden");
   insta.classList.remove("hidden");
+  hideXNav();
 }
 
 
@@ -1169,14 +1576,20 @@ function sendDM(){
   const text = input.value.trim();
   if(!text) return;
 
-  const dmTimeline = document.querySelector("#dmapp .timeline");
+  const dmTimeline = document.getElementById("dmTimeline");
   if(!dmTimeline) return;
 
   // 自分の返信
   const reply = document.createElement("div");
   reply.className = "dm-reply me";
   reply.textContent = text;
-  dmTimeline.appendChild(reply);
+  dmThreads[currentDMUser].push({
+  from: "me",
+  text: text
+});
+
+renderDM();
+
 
   input.value = "";
   dmTimeline.scrollTop = dmTimeline.scrollHeight;
@@ -1214,7 +1627,9 @@ function sendDM(){
       const dm = document.createElement("div");
       dm.className = "dm-reply";
       dm.textContent = msg;
-      dmTimeline.appendChild(dm);
+      dmHistory.push({ from:"other", text: msg });
+renderDM();
+
       dmTimeline.scrollTop = dmTimeline.scrollHeight;
     }, delay);
   });
@@ -1222,12 +1637,263 @@ function sendDM(){
 
 
 
+function scheduleNewDM(){
+  setTimeout(() => {
+
+    dmRead = false;
+
+    const badge = document.getElementById("dmBadge");
+    if(badge){
+      badge.style.display = "flex";
+      badge.textContent = "1";
+    }
+
+  }, 20000);
+}
+
+
+
+
+
+function openDM(user){
+
+  dmRead = true;
+  currentDMUser = user;
+
+  const badge = document.getElementById("dmBadge");
+  if(badge) badge.style.display = "none";
+
+  dmList.classList.add("hidden");
+  dmRoom.classList.remove("hidden");
+  showXNav();
+
+  // スレッドがなければ作る
+  if(!dmThreads[user]){
+    const dm = getRandomDM();
+    dmThreads[user] = [{
+      from: "other",
+      name: dm.name,
+      id: dm.id,
+      text: dm.text
+    }];
+  }
+
+  // タイトル変更
+  const first = dmThreads[user][0];
+  dmRoomTitle.textContent = `${first.name} ${first.id}`;
+
+  renderDM();
+}
+
+
+
+
+
+function backToDMList(){
+  dmRoom.classList.add("hidden");
+  dmList.classList.remove("hidden");
+showXNav();
+}
+
+function backToX(){
+  dmList.classList.add("hidden");
+  dmRoom.classList.add("hidden");
+  xapp.classList.remove("hidden");
+showXNav();
+}
+
+
+
+
+
+function goXHome(){
+  // DM画面を閉じて通常タイムラインへ
+  dmList.classList.add("hidden");
+  dmRoom.classList.add("hidden");
+
+  xapp.classList.remove("hidden");
+  timeline.classList.remove("hidden");
+  
+}
+
+
+
+
+
+function openDMList(){
+  xapp.classList.add("hidden");
+  dmList.classList.remove("hidden");
+  showXNav();
+
+  // ★ 未読色の反映をここでも行う
+  const dmItem = document.getElementById("dmItem_job");
+  if(dmItem){
+    if(!dmRead){
+      dmItem.classList.add("unread");
+    }else{
+      dmItem.classList.remove("unread");
+    }
+  }
+}
+
+
+
+
+
+
+
+
+function renderDM(){
+  const dmTimeline = document.getElementById("dmTimeline");
+  if(!dmTimeline || !currentDMUser) return;
+
+  dmTimeline.innerHTML = "";
+
+  dmThreads[currentDMUser].forEach(m => {
+    const div = document.createElement("div");
+    div.className = "dm-reply" + (m.from === "me" ? " me" : "");
+
+    if(m.from === "other"){
+      div.innerHTML =
+        `<strong>${m.name}<span class="id">${m.id}</span></strong><br>${m.text}`;
+    }else{
+      div.textContent = m.text;
+    }
+
+    dmTimeline.appendChild(div);
+  });
+
+  dmTimeline.scrollTop = dmTimeline.scrollHeight;
+}
+
+
+function updateDMUnreadUI(){
+  const dmItem = document.getElementById("dmItem_job");
+  const dmNav  = document.getElementById("dmNav");
+
+  if(!dmRead){
+    if(dmItem) dmItem.classList.add("unread");
+    if(dmNav)  dmNav.classList.add("unread");
+  }else{
+    if(dmItem) dmItem.classList.remove("unread");
+    if(dmNav)  dmNav.classList.remove("unread");
+  }
+}
+
+// ===== ＋投稿ボタン用（追加） =====
+function openComposer(){
+  document.getElementById("composeModal").classList.remove("hidden");
+}
+
+
+document.getElementById("postImage").addEventListener("change", function(e){
+
+  const file = e.target.files[0];
+  const info = document.getElementById("exifInfo");
+  info.innerHTML = "";
+
+  if(!file) return;
+
+  EXIF.getData(file, function(){
+
+    const lat = EXIF.getTag(this, "GPSLatitude");
+    const lon = EXIF.getTag(this, "GPSLongitude");
+    const latRef = EXIF.getTag(this, "GPSLatitudeRef");
+    const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
+
+   
+    // 度分秒 → 度
+    function toDecimal(dms, ref){
+      const deg = dms[0].numerator / dms[0].denominator;
+      const min = dms[1].numerator / dms[1].denominator;
+      const sec = dms[2].numerator / dms[2].denominator;
+      let dec = deg + min / 60 + sec / 3600;
+      if(ref === "S" || ref === "W") dec *= -1;
+      return dec;
+    }
+
+    const latitude  = toDecimal(lat, latRef);
+    const longitude = toDecimal(lon, lonRef);
+
+    const mapUrl =
+      `https://www.google.com/maps?q=${latitude},${longitude}&z=16`;
+
+    info.innerHTML = `
+      ⚠️ <strong>この画像には位置情報が含まれています</strong><br>
+      緯度：${latitude.toFixed(5)}<br>
+      経度：${longitude.toFixed(5)}<br>
+      <a href="${mapUrl}" target="_blank">
+        📍 地図でこの場所を確認する
+      </a><br>
+      <span style="color:#333;font-size:12px;">
+        ※ この情報から撮影場所が推測される可能性があります
+      </span>
+    `;
+  });
+});
+
+
+
+
+
+
+
+
+function submitPost(){
+  post();  // ← 既存の投稿処理を呼ぶ
+  document.getElementById("composeModal").classList.add("hidden");
+}
+
+
+
+function closeComposer(){
+  document.getElementById("composeModal").classList.add("hidden");
+}
+
+
+
+function receiveNewDM(){
+  const dm = getRandomDM();
+  const userKey = dm.id;   // ← これがスレッドのキー
+
+  // 既存スレッドがなければ作成
+  if(!dmThreads[userKey]){
+    dmThreads[userKey] = [];
+  }
+
+  dmThreads[userKey].push({
+    from: "other",
+    name: dm.name,
+    id: dm.id,
+    text: dm.text
+  });
+
+  // 未読管理
+  dmRead = false;
+
+  const badge = document.getElementById("dmBadge");
+  if(badge){
+    badge.style.display = "flex";
+    badge.textContent = Object.keys(dmThreads).length;
+  }
+
+  updateDMList();
+}
+
+
+
+
+
+
+
+
+
+
 
 
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
 </body>
 </html>
-
-
-
