@@ -766,6 +766,36 @@ body{
 
 }
 
+@media (max-width: 600px){
+
+  /* ===== DM画面レイアウト修正 ===== */
+
+  /* DM画面全体を縦構造に */
+  #dmRoom{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* メッセージ一覧だけスクロール */
+  #dmRoom .timeline{
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 70px; /* 入力欄分の余白 */
+  }
+
+  /* 返信入力欄を画面下に固定 */
+  #dmRoom .compose{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #e6ecf0;
+    z-index: 100;
+  }
+
+}
 
 
 
@@ -1962,3 +1992,4 @@ function receiveNewDM(){
 
 </body>
 </html>
+
