@@ -202,7 +202,9 @@ body{
   border-radius:8px;border:1px solid #ccc;
 }
 .compose button{
-  width:100%;margin-top:6px;padding:10px;
+  width:100%;
+box-sizing: border-box;   /* ← これを追加 */
+margin-top:6px;padding:10px;
   border:none;border-radius:999px;
   background:#1d9bf0;color:#fff;
 }
@@ -751,10 +753,11 @@ body{
 
   /* 返信入力欄を下に固定 */
   #dmRoom .compose{
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+     position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
     background: #fff;
     border-top: 1px solid #e6ecf0;
     z-index: 100;
@@ -800,6 +803,15 @@ body{
     font-size: 16px;   /* ← これで拡大しなくなる */
   }
 
+}
+
+/* DM画面を absolute の基準にする（最重要） */
+#dmRoom{
+  position: relative;
+}
+
+#dmRoom .compose textarea{
+  box-sizing: border-box;
 }
 
 
