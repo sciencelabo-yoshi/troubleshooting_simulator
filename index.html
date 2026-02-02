@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+
+
+
 <meta charset="UTF-8">
 <title>SNSトラブルシミュレーター</title>
 
@@ -704,6 +710,40 @@ body{
 #textInput{
   padding-top: 30px;
 }
+
+
+/* ===== スマホでは画面ピッタリ表示 ===== */
+@media (max-width: 600px) {
+
+  body{
+    margin: 0;
+    background: #000;   /* 余白対策 */
+  }
+
+  .phone{
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .statusbar{
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .home,
+  .appscreen,
+  .story-view{
+    height: calc(100vh - 28px);
+  }
+}
+
+
+
+
+
+
 
 
 
