@@ -780,15 +780,14 @@ body{
 
 @media (max-width: 600px){
 
-  /* DM入力欄は拡大させない */
-  #dmRoom textarea,
-  #dmRoom #dmInput{
-    height: 44px;          /* 固定高さ（実アプリ相当） */
+  /* DM入力欄だけを固定（他に影響させない） */
+  #dmRoom > .compose textarea{
+    height: 44px;
     min-height: 44px;
     max-height: 44px;
 
-    resize: none;          /* 手動リサイズ無効 */
-    overflow-y: hidden;    /* スクロールバーも出さない */
+    resize: none;
+    overflow-y: hidden;
     line-height: 1.4;
   }
 
@@ -1695,6 +1694,17 @@ function receiveNewDM(){
 
   updateDMList();
 }
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 
