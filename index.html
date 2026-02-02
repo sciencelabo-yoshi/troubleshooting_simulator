@@ -818,15 +818,27 @@ margin-top:6px;padding:10px;
   box-sizing: border-box;
 }
 
+/* ★【追加】DM返信欄を画面下に固定（スマホのみ） */
 @media (max-width: 600px){
-
-  /* ★ DM画面の最下部にナビ分の余白を確保 */
-  #dmRoom{
-    padding-bottom: 52px;   /* ← 下部ナビと同じ高さ */
+  #dmRoom > .compose{
+    position: fixed;
+    bottom: 52px;        /* 下部ナビの高さ */
+    left: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 120;
     box-sizing: border-box;
   }
-
 }
+
+/* ★【追加】DMメッセージ一覧に余白 */
+@media (max-width: 600px){
+  #dmRoom .timeline{
+    padding-bottom: 120px;  /* 返信欄＋下部ナビ */
+    box-sizing: border-box;
+  }
+}
+
 
 
 </style>
@@ -1747,4 +1759,5 @@ function receiveNewDM(){
 
 </body>
 </html>
+
 
