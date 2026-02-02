@@ -768,23 +768,18 @@ body{
 
 @media (max-width: 600px){
 
-  /* ===== DM画面レイアウト修正 ===== */
-
-  /* DM画面全体を縦構造に */
+  /* DM画面の高さだけ指定（表示制御には触らない） */
   #dmRoom{
-    display: flex;
-    flex-direction: column;
     height: 100vh;
   }
 
   /* メッセージ一覧だけスクロール */
   #dmRoom .timeline{
-    flex: 1;
     overflow-y: auto;
-    padding-bottom: 70px; /* 入力欄分の余白 */
+    padding-bottom: 70px;
   }
 
-  /* 返信入力欄を画面下に固定 */
+  /* 返信入力欄を下に固定 */
   #dmRoom .compose{
     position: fixed;
     bottom: 0;
