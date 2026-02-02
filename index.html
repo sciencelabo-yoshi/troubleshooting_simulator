@@ -4,9 +4,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-
-
-
 <meta charset="UTF-8">
 <title>SNSトラブルシミュレーター</title>
 
@@ -16,7 +13,6 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
-
 .phone{
   width:375px;height:730px;margin:20px auto;
   background:#000;border-radius:28px;
@@ -24,16 +20,11 @@ body{
   overflow:hidden;position:relative;
 }
 
-
 .statusbar{
   height:28px;color:#fff;font-size:12px;
   padding:0 12px;display:flex;
   justify-content:space-between;align-items:center;
 }
-
-
-
-
 
 .home{
   position:absolute;top:28px;left:0;
@@ -497,9 +488,6 @@ body{
   white-space: pre-wrap;
 }
 
-
-
-
 /* ===== 添付画像（投稿・DM共通） ===== */
 .attached-image{
   margin-top:8px;
@@ -508,8 +496,6 @@ body{
   height:auto;
   border:1px solid #ddd;
 }
-
-
 
 /* ===== X 下部ナビゲーション ===== */
 .x-bottom-nav{
@@ -531,7 +517,6 @@ body{
   color: #1d9bf0;
 }
 
-
 .x-bottom-nav{
   position: absolute;
   bottom: 0;
@@ -547,8 +532,6 @@ body{
   z-index: 30;
 }
 
-
-
 /* ===== X系画面は下部ナビ分の余白を確保 ===== */
 #xapp,
 #dmList,
@@ -557,11 +540,9 @@ body{
   box-sizing: border-box;
 }
 
-
 .x-bottom-nav.hidden{
   display: none !important;
 }
-
 
 /* ===== DM未読表示 ===== */
 .dm-item.unread{
@@ -574,7 +555,6 @@ body{
   font-size:10px;
   margin-right:8px;
 }
-
 
 /* ===== 下部ナビ DM未読ドット ===== */
 #dmNav{
@@ -589,7 +569,6 @@ body{
   font-size:10px;
   color:#1D9BF0;
 }
-
 
 /* ===== X風 右下＋ボタン ===== */
 .x-fab{
@@ -608,7 +587,6 @@ body{
   cursor: pointer;
   z-index: 40;
 }
-
 
 .compose-modal{
   position: absolute;
@@ -634,8 +612,6 @@ body{
   display: none;
 }
 
-
-
 .cancel-btn{
   background: #e6ecf0;
   border: none;
@@ -645,7 +621,6 @@ body{
   border-radius: 4px;   /* ← 四角 */
   cursor: pointer;
 }
-
 
 .compose-top{
   display: flex;
@@ -675,12 +650,10 @@ body{
   cursor: pointer;
 }
 
-
 #textInput{
   width: 100%;
   box-sizing: border-box;
 }
-
 
 #textInput{
   resize: none;
@@ -691,8 +664,6 @@ body{
   box-sizing: border-box;
   resize: none;
 }
-
-
 
 .text-wrap{
   position: relative;
@@ -710,7 +681,6 @@ body{
 #textInput{
   padding-top: 30px;
 }
-
 
 /* ===== スマホでは画面ピッタリ表示 ===== */
 @media (max-width: 600px) {
@@ -792,13 +762,37 @@ body{
 
 }
 
+@media (max-width: 600px){
 
+  /* DM入力欄は拡大させない */
+  #dmRoom textarea,
+  #dmRoom #dmInput{
+    height: 44px;          /* 固定高さ（実アプリ相当） */
+    min-height: 44px;
+    max-height: 44px;
 
+    resize: none;          /* 手動リサイズ無効 */
+    overflow-y: hidden;    /* スクロールバーも出さない */
+    line-height: 1.4;
+  }
 
+}
 
+@media (max-width: 600px){
 
+  /* DM入力欄は拡大させない */
+  #dmRoom textarea,
+  #dmRoom #dmInput{
+    height: 44px;          /* 固定高さ（実アプリ相当） */
+    min-height: 44px;
+    max-height: 44px;
 
+    resize: none;          /* 手動リサイズ無効 */
+    overflow-y: hidden;    /* スクロールバーも出さない */
+    line-height: 1.4;
+  }
 
+}
 
 
 </style>
@@ -812,10 +806,6 @@ body{
   <!-- ホーム -->
   <div class="home" id="home">
 
-
-
-
-
    <div class="app" onclick="openX()">
   <div class="app-icon">
     N
@@ -823,11 +813,6 @@ body{
   </div>
   N
 </div>
-
-
-
-
-
 
     <div class="app" onclick="openInstagram()">
       <div class="app-icon instagram">
@@ -838,8 +823,6 @@ body{
       Narastagram
     </div>
   </div>
-
-
 
   <!-- X -->
 
@@ -852,14 +835,6 @@ body{
     <div class="title">メッセージ</div>
     <div class="back"></div>
   </div>
-
-
-
-
-
-
-
-
 
   <div class="timeline">
     <div class="dm-item" id="dmItem_job" onclick="openDM('job_support')">
@@ -894,41 +869,13 @@ body{
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
   <div class="header">
     <div class="back" onclick="backToX()">←</div>
     <div class="title">ダイレクトメッセージ</div>
     <div class="back"></div>
   </div>
 
-
-
-
-
-
-
-
-
-
-
-
   <div class="appscreen hidden" id="xapp">
-
-
-
-
-
-
-
-
 
     <div class="header">
 
@@ -942,18 +889,7 @@ body{
   📩 新しいダイレクトメッセージがあります
 </div>
 
-
-
-
-
-
-
-
-
     <div class="timeline" id="timeline"></div>
-
-
-
 
 <div class="compose-modal hidden" id="composeModal">
   
@@ -966,16 +902,11 @@ body{
       <button class="post-btn" onclick="submitPost()">投稿</button>
     </div>
 
-
 <div class="text-wrap">
 <select id="exampleSelect" onchange="applyExample()">
   <option value="">炎上例（教材用）を選択　※通常投稿は選択しない</option>
 </select>
 </div>
-
-
-
-
 
     <!-- 入力欄 -->
     <textarea id="textInput" placeholder="いまどうしてる？"></textarea>
@@ -985,30 +916,9 @@ body{
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
    <div class="compose">
 
-
-
-  
-
-
-
-
   <select id="exampleSelect" onchange="applyExample()">
-
-
-
-
 
         <option value="">炎上例（教材用）を選択　※通常投稿は選択しない</option>
       </select>
@@ -1017,31 +927,8 @@ body{
       <button onclick="post()">投稿</button>
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
 <!-- ＋投稿ボタン -->
 <div class="x-fab" onclick="openComposer()">＋</div>
-
-
-
 
 <div class="x-bottom-nav hidden" id="xBottomNav">
   <span class="active" onclick="goXHome()">🏠</span>
@@ -1050,22 +937,6 @@ body{
   <span id="dmNav" onclick="openDMList()">✉️</span>
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   </div>
 
@@ -1089,16 +960,6 @@ body{
 
       <div class="story" onclick="openStory()">
 
-
-
-
-
-
-
-
-
-
-
         <div class="story-ring"><div class="story-inner"></div></div>A
       </div>
       
@@ -1116,7 +977,6 @@ body{
   <!-- ストーリー再生画面 -->
   <div class="story-view hidden" id="storyView">
 
-
 <div class="story-warning hidden" id="storyWarning">
   <div class="story-warning-box">
     <strong>その操作、本当に大丈夫？</strong><br><br>
@@ -1127,11 +987,6 @@ body{
     <em>反応せずに信頼できる大人に相談してください。</em>
   </div>
 </div>
-
-
-
-
-
 
     <div class="story-top">
       <div>Aのストーリー</div>
@@ -1163,7 +1018,6 @@ const bar=document.getElementById("bar");
 const textInput=document.getElementById("textInput");
 const exampleSelect=document.getElementById("exampleSelect");
 
-
 const xBottomNav = document.getElementById("xBottomNav");
 
 function showXNav(){
@@ -1177,16 +1031,9 @@ function hideXNav(){
 // ★ 初期表示では必ず非表示
 hideXNav();
 
-
-
 const dmNotice = document.getElementById("dmNotice");
 
-
-
-
-
 let dmRead = false;   // ★ DMを読んだかどうか
-
 
 const dmTemplates = [
   {
@@ -1236,27 +1083,12 @@ const dmTemplates = [
   }
 ];
 
-
 function getRandomDM(){
   return dmTemplates[Math.floor(Math.random() * dmTemplates.length)];
 }
 
-
-
-
-
-
-
-
-
-
 let dmThreads = {};
 let currentDMUser = null;
-
-
-
-
-
 
 /* 炎上例（type付き） */
 const flameExamples=[
@@ -1320,9 +1152,6 @@ const normalComments=["大丈夫？","不用意では","燃えそう","誤解さ
 const harshComments=["アウト","魚拓済","特定班","通報しました"];
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
-
-
-
 function openX(){
   home.classList.add("hidden");
   insta.classList.add("hidden");
@@ -1350,13 +1179,6 @@ function openX(){
     }
   }
 }
-
-
-
-
-
-
-
 
 dmNotice.onclick = ()=>{
   dmNotice.classList.add("hidden");
@@ -1388,29 +1210,12 @@ function backHome(){
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 function openInstagram(){
   home.classList.add("hidden");
   xapp.classList.add("hidden");
   insta.classList.remove("hidden");
   hideXNav();
 }
-
-
-
-
-
-
-
 
 function openStory(){
   storyView.classList.remove("hidden");
@@ -1423,9 +1228,6 @@ function post(){
  let timer = null;
   const t=textInput.value.trim();
   if(!t)return;
-
-
-
 
   const type=exampleSelect.value!=="" ? flameExamples[exampleSelect.value].type : "default";
   const state={severity:0,views:0,replies:0,type};
@@ -1441,9 +1243,6 @@ function post(){
 <img class="attached-image" style="display:none;">
 <div class="meta">
 
-
-
-
         <span class="views">👁 0</span>
         <span class="replies">💬 0</span>
         <span class="reposts">🔁 0</span>
@@ -1454,11 +1253,7 @@ function post(){
     </div>
   `;
 
-
-
   timeline.prepend(postDiv);
-
-
 
 // ===== 画像添付処理（ここだけ）=====
 const imageInput = document.getElementById("postImage");
@@ -1475,10 +1270,6 @@ if(imageFile){
   imageInput.value = ""; // 次の投稿に残さない
 }
 
-
-
-
-
   const repliesBox=postDiv.querySelector(".replies-box");
   postDiv.querySelector(".body").onclick=()=>{
     repliesBox.style.display=repliesBox.style.display==="block"?"none":"block";
@@ -1490,11 +1281,6 @@ if(imageFile){
     reposts:postDiv.querySelector(".reposts"),
     likes:postDiv.querySelector(".likes")
   };
-
-
-
-
-
 
  if (type === "default") {
   // ===== 炎上しない投稿 =====
@@ -1544,11 +1330,6 @@ const timer = setInterval(() => {
 
 }, 900);
 
-
-
-
-
-
   postDiv.querySelector(".delete").onclick = (e) => {
     e.stopPropagation();
     clearInterval(timer);
@@ -1593,24 +1374,10 @@ const timer = setInterval(() => {
   };
 }
 
-
-
-
-
-
-
   postDiv.querySelector(".delete").onclick=(e)=>{
     e.stopPropagation();
     clearInterval(timer);
     postDiv.remove();
-
-
-
-
-
-
-
-
 
     const warn=document.createElement("div");
     warn.className="warning";
@@ -1631,7 +1398,6 @@ const timer = setInterval(() => {
 function toggleLike(el){
   showStoryWarning();
 }
-
 
 const storyWarning = document.getElementById("storyWarning");
 
@@ -1656,8 +1422,6 @@ toggleLike = function(el){
   showStoryWarning();
 };
 
-
-
 /* ===== DM返信送信処理（安全版・追加） ===== */
 function sendDM(){
   const input = document.getElementById("dmInput");
@@ -1679,7 +1443,6 @@ function sendDM(){
 });
 
 renderDM();
-
 
   input.value = "";
   dmTimeline.scrollTop = dmTimeline.scrollHeight;
@@ -1725,8 +1488,6 @@ renderDM();
   });
 }
 
-
-
 function scheduleNewDM(){
   setTimeout(() => {
 
@@ -1740,10 +1501,6 @@ function scheduleNewDM(){
 
   }, 20000);
 }
-
-
-
-
 
 function openDM(user){
 
@@ -1775,10 +1532,6 @@ function openDM(user){
   renderDM();
 }
 
-
-
-
-
 function backToDMList(){
   dmRoom.classList.add("hidden");
   dmList.classList.remove("hidden");
@@ -1792,10 +1545,6 @@ function backToX(){
 showXNav();
 }
 
-
-
-
-
 function goXHome(){
   // DM画面を閉じて通常タイムラインへ
   dmList.classList.add("hidden");
@@ -1805,10 +1554,6 @@ function goXHome(){
   timeline.classList.remove("hidden");
   
 }
-
-
-
-
 
 function openDMList(){
   xapp.classList.add("hidden");
@@ -1825,13 +1570,6 @@ function openDMList(){
     }
   }
 }
-
-
-
-
-
-
-
 
 function renderDM(){
   const dmTimeline = document.getElementById("dmTimeline");
@@ -1874,7 +1612,6 @@ function updateDMUnreadUI(){
 function openComposer(){
   document.getElementById("composeModal").classList.remove("hidden");
 }
-
 
 document.getElementById("postImage").addEventListener("change", function(e){
 
@@ -1922,25 +1659,14 @@ document.getElementById("postImage").addEventListener("change", function(e){
   });
 });
 
-
-
-
-
-
-
-
 function submitPost(){
   post();  // ← 既存の投稿処理を呼ぶ
   document.getElementById("composeModal").classList.add("hidden");
 }
 
-
-
 function closeComposer(){
   document.getElementById("composeModal").classList.add("hidden");
 }
-
-
 
 function receiveNewDM(){
   const dm = getRandomDM();
@@ -1969,17 +1695,6 @@ function receiveNewDM(){
 
   updateDMList();
 }
-
-
-
-
-
-
-
-
-
-
-
 
 </script>
 
