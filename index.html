@@ -740,6 +740,31 @@ body{
 }
 
 
+@media (max-width: 600px){
+
+  /* 上部の黒帯はスマホでは不要 */
+  .statusbar{
+    display: none;
+  }
+
+  /* 上にずらしていた分をリセット */
+  .home,
+  .appscreen,
+  .story-view{
+    top: 0;
+    height: 100vh;
+  }
+
+  /* X下部ナビは常に表示 */
+  .x-bottom-nav{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+  }
+
+}
 
 
 
