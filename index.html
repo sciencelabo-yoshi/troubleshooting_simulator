@@ -805,11 +805,18 @@ margin-top:6px;padding:10px;
 
 }
 
-/* DM画面を absolute の基準にする（最重要） */
+/* DM画面：absolute の基準にする（常時） */
 #dmRoom{
   position: relative;
 }
 
+/* DM画面：表示されている時だけ flex にする */
+#dmRoom:not(.hidden){
+  display: flex;
+  flex-direction: column;
+}
+
+/* DM入力欄の横はみ出し防止 */
 #dmRoom .compose textarea{
   box-sizing: border-box;
 }
