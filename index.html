@@ -8,6 +8,14 @@
 <title>SNSトラブルシミュレーター</title>
 
 <style>
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;   /* ← スクロールを完全に止める */
+}
+
 body{
   background:#b0b0b0;
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
@@ -694,7 +702,7 @@ margin-top:6px;padding:10px;
 
   .phone{
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     margin: 0;
     border-radius: 0;
     box-shadow: none;
@@ -724,7 +732,7 @@ margin-top:6px;padding:10px;
   .appscreen,
   .story-view{
     top: 0;
-    height: 100vh;
+    height: 100%;
   }
 
   /* X下部ナビは常に表示 */
@@ -809,6 +817,7 @@ margin-top:6px;padding:10px;
 #dmRoom .compose textarea{
   box-sizing: border-box;
 }
+
 
 
 </style>
