@@ -667,7 +667,6 @@ margin-top:6px;padding:10px;
 
 #textInput{
   resize: none;
-  height: 120px; 
 }
 
 #textInput{
@@ -680,18 +679,16 @@ margin-top:6px;padding:10px;
   position: relative;
 }
 
-.text-wrap #exampleSelect{
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  font-size: 12px;
-  padding: 2px 4px;
-  opacity: 0.85;
+#exampleSelect{
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;   /* ← 投稿欄との間隔 */
 }
 
 #textInput{
-  padding-top: 30px;
+  padding-top: 8px;
 }
+
 
 /* ===== スマホでは画面ピッタリ表示 ===== */
 @media (max-width: 600px) {
@@ -832,17 +829,13 @@ margin-top:6px;padding:10px;
   }
 }
 
-/* ★ iOSの自動ズーム防止（入力欄すべて） */
+/* ★【追加】DMメッセージ一覧に余白 */
 @media (max-width: 600px){
-  input,
-  textarea,
-  select,
-  button{
-    font-size: 16px !important;
+  #dmRoom .timeline{
+    padding-bottom: 120px;  /* 返信欄＋下部ナビ */
+    box-sizing: border-box;
   }
 }
-
-
 
 
 </style>
@@ -1763,6 +1756,8 @@ function receiveNewDM(){
 
 </body>
 </html>
+
+
 
 
 
