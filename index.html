@@ -1480,7 +1480,11 @@ const timer = setInterval(() => {
         <div class="icon"></div>
         <div class="body">
           <div class="name">フォロワー<span class="id">@friend</span></div>
-          <div class="text">${normalComments[rand(0, normalComments.length - 1)]}</div>
+
+          <div class="text">
+${generateSmartComment(t)}
+</div>
+
         </div>
       </div>
     `);
@@ -1791,6 +1795,201 @@ function renderDM(){
   dmTimeline.scrollTop = dmTimeline.scrollHeight;
 }
 
+// ===== 強い不適切語（即アウト判定） =====
+const severeWords = [
+  "あほ",
+  "バカ",
+  "きもい",
+"うざい",
+"くそ",
+"クソ",
+"糞",
+"だるい",
+  "死ね",
+"ブス",
+  "消えろ",
+  "クズ"
+];
+
+
+
+// ===== 投稿内容の特徴を分析 =====
+function analyzePostText(text){
+  return {
+    hasPerson: /(あいつ|あの人|こいつ|〇〇|この人)/.test(text),
+    hasNegative: /(無理|きらい|嫌い|使えない|だめ|最低)/.test(text),
+    hasGeneralize: /(いつも|どうせ|みんな|に決まってる)/.test(text),
+    emotionStrong: /！|!|マジ|ほんと/.test(text),
+    lengthShort: text.length < 20,
+    severe:
+  severeWords.some(w => text.includes(w)) ||
+  /(死ね|しね|○ね|◯ね|ﾀﾋね)/.test(text)
+   // ★追加
+  };
+}
+
+// ===== コメント文パーツ =====
+const commentParts = {
+  intro: [
+    "少し強い言い方に見えますが、",
+    "感情がかなり伝わってきます。",
+    "率直な気持ちなのだと思いますが、"
+  ],
+  core: [
+    "相手を一方的に否定しているように受け取られる可能性があります。",
+    "読み手によっては攻撃的に感じるかもしれません。",
+    "誤解を生みやすい表現に見えます。"
+  ],
+  soften: [
+    "悪意があるとは限りませんが、",
+    "意図とは違う受け取られ方をすることもあります。"
+  ],
+  close: [
+    "もう少し具体的に書くと伝わりやすいと思います。",
+    "別の言い方も考えられるかもしれません。",
+    "少し表現を見直してもよさそうです。"
+  ]
+};
+
+// ===== severe：SNSっぽい返し =====
+const severeSNS = {
+  short: [
+    "それはさすがに言いすぎ。",
+    "普通にアウトじゃない？",
+    "その一言、きついよ。",
+    "それ書いちゃうのは危ない。",
+    "見てて気分よくない人多いと思う。"
+  ],
+  flat: [
+    "短いけど、かなり強い言葉だと思う。",
+    "冗談のつもりでも通じないやつ。",
+    "一言でも印象かなり悪くなるやつだよ。",
+    "これ、普通に攻撃って受け取られるやつ。",
+  ],
+  distance: [
+    "そう感じる人、結構いそう。",
+    "見た人がどう思うかは考えた方がいいかも。",
+    "これで共感は集まらないと思う。",
+    "その言い方だと反感買いやすい。"
+  ],
+  shrug: [
+    "まぁ、そういう言い方もあるけどさ。",
+    "気持ちは分からなくもないけど。",
+    "言いたいことは別にあるんじゃない？",
+    "感情そのまま出てる感じする。"
+  ],
+
+  tired: [ // 見てて疲れる系
+    "こういうの見ると、ちょっと疲れる。",
+    "またこういう感じか…ってなる。",
+    "正直、空気重くなるやつ。",
+    "これ流れてくるのしんどい人いそう。"
+  ],
+
+  cold: [ // 冷めた第三者
+    "特に何も言うことないけど、印象は良くない。",
+    "わざわざ書く必要あった？",
+    "それ言って何が残るんだろ。",
+    "うーん…って感じ。"
+  ],
+
+  peer: [ // 同世代っぽい
+    "そのノリ、今あんま受けよくないよ。",
+    "それ言うと一気に人離れるやつ。",
+    "共感より引かれると思う。",
+    "普通にミュートされそう。"
+  ],
+
+  shortDry: [ // 超短文（SNS感MAX）
+    "きつ。",
+    "それは無理。",
+    "うわ…",
+    "言葉強。",
+    "普通に怖い。"
+  ],
+
+
+
+
+
+};
+
+
+
+
+
+
+
+// ===== 柔軟なコメント生成 =====
+function generateSmartComment(text){
+  const f = analyzePostText(text);
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+  let parts = [];
+
+if(f.severe){
+  
+
+  // ① 超短文だけ（20%）
+  if(Math.random() < 0.2){
+    return pick(severeSNS.shortDry);
+  }
+
+  // ② 一言ツッコミ（40%）
+  if(Math.random() < 0.4){
+    parts.push(
+      pick(
+        Math.random() < 0.5 ? severeSNS.short : severeSNS.peer
+      )
+    );
+  }
+
+  // ③ 本音 or 冷め（60%）
+  if(Math.random() < 0.6){
+    parts.push(
+      pick(
+        Math.random() < 0.5 ? severeSNS.tired : severeSNS.cold
+      )
+    );
+  }
+
+  // ④ 余計な一言（30%）
+  if(Math.random() < 0.3){
+    parts.push(
+      pick(
+        Math.random() < 0.5 ? severeSNS.distance : severeSNS.shrug
+      )
+    );
+  }
+
+  return parts.join(" ");
+}
+
+
+
+
+  if(f.emotionStrong || Math.random() < 0.5){
+    parts.push(pick(commentParts.intro));
+  }
+
+  if(f.hasPerson || f.hasNegative){
+    parts.push(pick(commentParts.core));
+  }
+
+  if(Math.random() < 0.6){
+    parts.push(pick(commentParts.soften));
+  }
+
+  parts.push(pick(commentParts.close));
+
+  return parts.filter(p => p !== "").join("");
+}
+
+
+
+
+
+
+
 
 function updateDMUnreadUI(){
   const dmItem = document.getElementById("dmItem_job");
@@ -1973,4 +2172,3 @@ if(lat && lon && latRef && lonRef){
 
 </body>
 </html>
-
