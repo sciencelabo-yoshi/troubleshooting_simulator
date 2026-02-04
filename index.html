@@ -1524,34 +1524,36 @@ ${generateSmartComment(t)}
 
 } else {
   // ===== 炎上投稿（従来どおり）=====
-  const timer = setInterval(() => {
-    const pool = state.severity < 40 ? normalComments : harshComments;
+  // ===== 炎上投稿（コメント生成ルールを統一）=====
+const timer = setInterval(() => {
 
-    repliesBox.insertAdjacentHTML("beforeend", `
-      <div class="reply">
-        <div class="icon"></div>
-        <div class="body">
-          <div class="name">匿名<span class="id">@xxxx</span></div>
-          <div class="text">${pool[rand(0, pool.length - 1)]}</div>
-        </div>
+  repliesBox.insertAdjacentHTML("beforeend", `
+    <div class="reply">
+      <div class="icon"></div>
+      <div class="body">
+        <div class="name">匿名<span class="id">@xxxx</span></div>
+        <div class="text">${generateSmartComment(t)}</div>
       </div>
-    `);
+    </div>
+  `);
 
-    state.replies++;
-    state.severity = Math.min(100, state.severity + 2);
+  state.replies++;
+  state.severity = Math.min(100, state.severity + 2);
 
-    const inc =
-      state.severity < 30 ? rand(5, 20) :
-      state.severity < 60 ? rand(50, 200) :
-      rand(500, 3000);
+  const inc =
+    state.severity < 30 ? rand(5, 20) :
+    state.severity < 60 ? rand(50, 200) :
+    rand(500, 3000);
 
-    state.views += inc;
+  state.views += inc;
 
-    meta.views.textContent = "👁 " + state.views.toLocaleString();
-    meta.replies.textContent = "💬 " + state.replies;
-    meta.reposts.textContent = "🔁 " + Math.floor(state.views / 80);
-    meta.likes.textContent = "❤️ " + Math.floor(state.views / 25);
-  }, 600);
+  meta.views.textContent   = "👁 " + state.views.toLocaleString();
+  meta.replies.textContent = "💬 " + state.replies;
+  meta.reposts.textContent = "🔁 " + Math.floor(state.views / 80);
+  meta.likes.textContent   = "❤️ " + Math.floor(state.views / 25);
+
+}, 600);
+
 
   postDiv.querySelector(".delete").onclick = (e) => {
     e.stopPropagation();
@@ -1821,6 +1823,10 @@ function analyzePostText(text){
     hasGeneralize: /(いつも|どうせ|みんな|に決まってる)/.test(text),
     emotionStrong: /！|!|マジ|ほんと/.test(text),
     lengthShort: text.length < 20,
+
+
+relatable: /(つらい|しんどい|疲れた|無理|最悪|きつい)/.test(text),
+
     severe:
   severeWords.some(w => text.includes(w)) ||
   /(死ね|しね|○ね|◯ね|ﾀﾋね)/.test(text)
@@ -1926,52 +1932,31 @@ const casualSNS = {
 };
 
 
+const empathicSNS = {
+  strong: [
+    "分かる、それ。",
+    "それはしんどいよね。",
+    "同じこと思ってた。",
+    "正直、自分もそう感じる。",
+    "それ言いたくなる気持ちは分かる。"
+  ],
+  light: [
+    "まぁ分からなくもない。",
+    "そういう日もあるよね。",
+    "気持ちは理解できる。",
+    "言いたいことは伝わる。",
+    "共感する人いそう。"
+  ],
+  echo: [
+    "ほんとそれ。",
+    "それな。",
+    "わかりみ。",
+    "うん、それ。",
+    "同意。"
+  ]
+};
 
 
-
-// ===== 柔軟なコメント生成 =====
-function generateSmartComment(text){
-  const f = analyzePostText(text);
-  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
-  let parts = [];
-
-if(f.severe){
-  
-
-  // ① 超短文だけ（20%）
-  if(Math.random() < 0.2){
-    return pick(severeSNS.shortDry);
-  }
-
-  // ② 一言ツッコミ（40%）
-  if(Math.random() < 0.4){
-    parts.push(
-      pick(
-        Math.random() < 0.5 ? severeSNS.short : severeSNS.peer
-      )
-    );
-  }
-
-  // ③ 本音 or 冷め（60%）
-  if(Math.random() < 0.6){
-    parts.push(
-      pick(
-        Math.random() < 0.5 ? severeSNS.tired : severeSNS.cold
-      )
-    );
-  }
-
-  // ④ 余計な一言（30%）
-  if(Math.random() < 0.3){
-    parts.push(
-      pick(
-        Math.random() < 0.5 ? severeSNS.distance : severeSNS.shrug
-      )
-    );
-  }
-
-  return parts.join(" ");
-}
 
 
 function generateSmartComment(text){
@@ -2017,16 +2002,34 @@ function generateSmartComment(text){
   }
 
   return pick(casualSNS.dry);
+
+
+
+if(f.relatable && Math.random() < 0.3){
+  return pick(
+    Math.random() < 0.4 ? empathicSNS.echo :
+    Math.random() < 0.7 ? empathicSNS.light :
+                          empathicSNS.strong
+  );
 }
 
-
-
-
-  return parts.filter(p => p !== "").join("");
+// 軽いツッコミ
+if(Math.random() < 0.25){
+  return pick(casualSNS.short);
 }
 
+if(f.lengthShort && Math.random() < 0.6){
+  return pick(casualSNS.light);
+}
 
+if(f.emotionStrong){
+  return pick(casualSNS.chill);
+}
 
+return pick(casualSNS.dry);
+
+  
+}
 
 
 
