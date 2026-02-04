@@ -1828,28 +1828,6 @@ function analyzePostText(text){
   };
 }
 
-// ===== コメント文パーツ =====
-const commentParts = {
-  intro: [
-    "少し強い言い方に見えますが、",
-    "感情がかなり伝わってきます。",
-    "率直な気持ちなのだと思いますが、"
-  ],
-  core: [
-    "相手を一方的に否定しているように受け取られる可能性があります。",
-    "読み手によっては攻撃的に感じるかもしれません。",
-    "誤解を生みやすい表現に見えます。"
-  ],
-  soften: [
-    "悪意があるとは限りませんが、",
-    "意図とは違う受け取られ方をすることもあります。"
-  ],
-  close: [
-    "もう少し具体的に書くと伝わりやすいと思います。",
-    "別の言い方も考えられるかもしれません。",
-    "少し表現を見直してもよさそうです。"
-  ]
-};
 
 // ===== severe：SNSっぽい返し =====
 const severeSNS = {
@@ -1915,6 +1893,37 @@ const severeSNS = {
 };
 
 
+// ===== 通常投稿用：SNSっぽいコメント =====
+const casualSNS = {
+  short: [
+    "それ、どういう意味？",
+    "ちょっと強くない？",
+    "言い方きつめかも。",
+    "それだけだと分からん。",
+    "急にどうした？"
+  ],
+  light: [
+    "もう少し詳しく聞きたい。",
+    "何かあったん？",
+    "背景知らないと判断むずい。",
+    "それだけだと誤解されそう。",
+    "一言だと伝わりにくいかも。"
+  ],
+  chill: [
+    "まぁ気持ちは分かる。",
+    "そう思う人もいるかもね。",
+    "見る人によって受け取り方違いそう。",
+    "一旦落ち着こ。",
+    "深掘りしたら話変わりそう。"
+  ],
+  dry: [
+    "うーん。",
+    "微妙。",
+    "なんとも言えん。",
+    "判断材料少なすぎ。",
+    "ノーコメント。"
+  ]
+};
 
 
 
@@ -1965,21 +1974,53 @@ if(f.severe){
 }
 
 
+function generateSmartComment(text){
+  const f = analyzePostText(text);
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 
+  // ===== 強い不適切語（既存そのまま）=====
+  if(f.severe){
+    let parts = [];
 
-  if(f.emotionStrong || Math.random() < 0.5){
-    parts.push(pick(commentParts.intro));
+    if(Math.random() < 0.2){
+      return pick(severeSNS.shortDry);
+    }
+    if(Math.random() < 0.4){
+      parts.push(
+        pick(Math.random() < 0.5 ? severeSNS.short : severeSNS.peer)
+      );
+    }
+    if(Math.random() < 0.6){
+      parts.push(
+        pick(Math.random() < 0.5 ? severeSNS.tired : severeSNS.cold)
+      );
+    }
+    if(Math.random() < 0.3){
+      parts.push(
+        pick(Math.random() < 0.5 ? severeSNS.distance : severeSNS.shrug)
+      );
+    }
+    return parts.join(" ");
   }
 
-  if(f.hasPerson || f.hasNegative){
-    parts.push(pick(commentParts.core));
+  // ===== 通常投稿：SNS口調 =====
+  if(Math.random() < 0.25){
+    return pick(casualSNS.short);
   }
 
-  if(Math.random() < 0.6){
-    parts.push(pick(commentParts.soften));
+  if(f.lengthShort && Math.random() < 0.6){
+    return pick(casualSNS.light);
   }
 
-  parts.push(pick(commentParts.close));
+  if(f.emotionStrong){
+    return pick(casualSNS.chill);
+  }
+
+  return pick(casualSNS.dry);
+}
+
+
+
 
   return parts.filter(p => p !== "").join("");
 }
