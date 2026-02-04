@@ -507,6 +507,8 @@ margin-top:6px;padding:10px;
   border:1px solid #ddd;
 }
 
+
+
 /* ===== X 下部ナビゲーション ===== */
 .x-bottom-nav{
   height: 52px;
@@ -838,6 +840,105 @@ margin-top:6px;padding:10px;
 }
 
 
+/* ★ 投稿モーダル内の横はみ出し防止（最重要） */
+.compose-box,
+.compose-box *{
+  box-sizing: border-box;
+}
+
+.compose-icons{
+  margin-top: 6px;
+  font-size: 16px;
+  color: #1d9bf0;
+  cursor: pointer;
+}
+
+.image-picker{
+  position: absolute;   /* ← fixed をやめる */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 300;
+}
+
+.image-picker.hidden{
+  display: none;
+}
+
+.image-picker-box{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.picker-header{
+  position: relative;        /* 基準にする */
+  height: 44px;
+  color: #fff;
+  border-bottom: 1px solid #333;
+}
+
+/* 左の「クリア」 */
+.picker-header span:first-child{
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+/* 中央タイトル */
+.picker-header strong{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 700;
+}
+
+/* 右側ダミー */
+.picker-header span:last-child{
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+ 
+.picker-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.picker-grid img{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.phone{
+  position: relative;   /* ← これを追加 */
+}
+
+.image-preview{
+  margin-top: 8px;
+  width: 120px;              /* Xっぽいサイズ */
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+.image-preview.hidden{
+  display: none;
+}
+
+
+
 </style>
 </head>
 
@@ -953,7 +1054,15 @@ margin-top:6px;padding:10px;
 
     <!-- 入力欄 -->
     <textarea id="textInput" placeholder="いまどうしてる？"></textarea>
-    <input type="file" id="postImage" accept="image/*">
+
+<div class="compose-icons">
+  <span onclick="openImagePicker()">🖼 画像</span>
+<!-- ★ 画像プレビュー -->
+<img id="imagePreview" class="image-preview hidden">
+
+</div>
+
+    
 <div id="exifInfo" style="font-size:13px;color:#d00000;margin-top:6px;"></div>
 
   </div>
@@ -966,7 +1075,7 @@ margin-top:6px;padding:10px;
         <option value="">炎上例（教材用）を選択　※通常投稿は選択しない</option>
       </select>
       <textarea id="textInput_old" placeholder="いまどうしてる？"></textarea>
-<input type="file" id="postImage_old" accept="image/*">
+
       <button onclick="post()">投稿</button>
     </div>
 
@@ -1049,7 +1158,26 @@ margin-top:6px;padding:10px;
 
   </div>
 
+<div class="image-picker hidden" id="imagePicker">
+  <div class="image-picker-box">
+
+    <div class="picker-header">
+      <span onclick="closeImagePicker()">キャンセル</span>
+      <strong>画像を選択</strong>
+      <span></span>
+    </div>
+
+    <div class="picker-grid" id="pickerGrid"></div>
+
+  </div>
 </div>
+
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
 
 <script>
 const home=document.getElementById("home");
@@ -1298,20 +1426,25 @@ function post(){
 
   timeline.prepend(postDiv);
 
-// ===== 画像添付処理（ここだけ）=====
-const imageInput = document.getElementById("postImage");
-const imageFile = imageInput.files[0];
 
-if(imageFile){
+// ===== サンプル画像添付 =====
+if(selectedSampleImage){
   const img = postDiv.querySelector(".attached-image");
-  const reader = new FileReader();
-  reader.onload = e => {
-    img.src = e.target.result;
-    img.style.display = "block";
-  };
-  reader.readAsDataURL(imageFile);
-  imageInput.value = ""; // 次の投稿に残さない
+  img.src = selectedSampleImage;
+  img.style.display = "block";
+
+  // ★ 位置情報が「あるときだけ」表示
+  if(imageHasLocation){
+    const warn = document.createElement("div");
+    warn.style.fontSize = "13px";
+    warn.style.color = "#d00000";
+    warn.textContent = imageLocationText;
+    img.after(warn);
+  }
 }
+
+
+
 
   const repliesBox=postDiv.querySelector(".replies-box");
   postDiv.querySelector(".body").onclick=()=>{
@@ -1434,9 +1567,24 @@ const timer = setInterval(() => {
     timeline.prepend(warn);
   };
 
-  textInput.value="";
+    textInput.value="";
   exampleSelect.value="";
+
+  // ★ サンプル画像の選択をリセット（ここに追加）
+  selectedSampleImage = null;
+ 
+ document
+    .querySelectorAll(".sample-images img")
+    .forEach(i => i.classList.remove("selected"));
 }
+
+const preview = document.getElementById("imagePreview");
+if(preview){
+  preview.src = "";
+  preview.classList.add("hidden");
+}
+
+
 
 function toggleLike(el){
   showStoryWarning();
@@ -1654,53 +1802,19 @@ function updateDMUnreadUI(){
 // ===== ＋投稿ボタン用（追加） =====
 function openComposer(){
   document.getElementById("composeModal").classList.remove("hidden");
+
+  // ★ 新規投稿開始時：画像プレビューを必ずリセット
+  const preview = document.getElementById("imagePreview");
+  if(preview){
+    preview.src = "";
+    preview.classList.add("hidden");
+  }
+
+  // ★ 内部的に選ばれていた画像もリセット
+  selectedSampleImage = null;
 }
 
-document.getElementById("postImage").addEventListener("change", function(e){
 
-  const file = e.target.files[0];
-  const info = document.getElementById("exifInfo");
-  info.innerHTML = "";
-
-  if(!file) return;
-
-  EXIF.getData(file, function(){
-
-    const lat = EXIF.getTag(this, "GPSLatitude");
-    const lon = EXIF.getTag(this, "GPSLongitude");
-    const latRef = EXIF.getTag(this, "GPSLatitudeRef");
-    const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
-
-   
-    // 度分秒 → 度
-    function toDecimal(dms, ref){
-      const deg = dms[0].numerator / dms[0].denominator;
-      const min = dms[1].numerator / dms[1].denominator;
-      const sec = dms[2].numerator / dms[2].denominator;
-      let dec = deg + min / 60 + sec / 3600;
-      if(ref === "S" || ref === "W") dec *= -1;
-      return dec;
-    }
-
-    const latitude  = toDecimal(lat, latRef);
-    const longitude = toDecimal(lon, lonRef);
-
-    const mapUrl =
-      `https://www.google.com/maps?q=${latitude},${longitude}&z=16`;
-
-    info.innerHTML = `
-      ⚠️ <strong>この画像には位置情報が含まれています</strong><br>
-      緯度：${latitude.toFixed(5)}<br>
-      経度：${longitude.toFixed(5)}<br>
-      <a href="${mapUrl}" target="_blank">
-        📍 地図でこの場所を確認する
-      </a><br>
-      <span style="color:#333;font-size:12px;">
-        ※ この情報から撮影場所が推測される可能性があります
-      </span>
-    `;
-  });
-});
 
 function submitPost(){
   post();  // ← 既存の投稿処理を呼ぶ
@@ -1739,10 +1853,106 @@ function receiveNewDM(){
   updateDMList();
 }
 
+/* ===== サンプル画像設定（ここだけ触ればOK） ===== */
+const sampleImageList = [
+  "images/samples/sample1_fake_gps.jpg",
+"images/samples/sample2.png",
+"images/samples/sample3.png",
+"images/samples/sample4_with_fake_gps.jpg",
+"images/samples/sample5_fake_gps.jpg",
+"images/samples/sample6.png",
+"images/samples/sample7.png",
+"images/samples/sample8.png",
+"images/samples/sample9.jpg",
+  "images/samples/sample10.png",
+
+];
 
 
 
+let selectedSampleImage = null;
+let imageHasLocation = false;
+let imageLocationText = "";
 
+// ★【追加】GPSの度分秒 → 小数変換関数
+function dmsToDecimal(dms, ref){
+  const [d, m, s] = dms;
+  let val = d + m/60 + s/3600;
+  return (ref === "S" || ref === "W") ? -val : val;
+}
+
+
+function openImagePicker(){
+  document.getElementById("imagePicker").classList.remove("hidden");
+}
+
+function closeImagePicker(){
+  document.getElementById("imagePicker").classList.add("hidden");
+}
+
+const pickerGrid = document.getElementById("pickerGrid");
+
+sampleImageList.forEach(src=>{
+  const img = document.createElement("img");
+  img.src = src;
+img.crossOrigin = "anonymous"; // ★ これを追加
+
+ img.onclick = () => {
+  selectedSampleImage = src;
+
+  const preview = document.getElementById("imagePreview");
+preview.crossOrigin = "anonymous"; // ★ 追加
+  if(preview){
+    preview.onload = () => {
+      checkLocationInfo(preview);  // ← 読み込み完了後
+    };
+    preview.src = src;
+    preview.classList.remove("hidden");
+  }
+
+  closeImagePicker();
+};
+
+
+
+  pickerGrid.appendChild(img);
+});
+
+
+function checkLocationInfo(img){
+  const exifBox = document.getElementById("exifInfo");
+
+  imageHasLocation = false;
+  imageLocationText = "";
+  exifBox.innerHTML = "";
+
+  // ★ JPEG以外は即終了
+  if(!img.src.match(/\.jpe?g$/i)) return;
+
+  EXIF.getData(img, function () {
+    
+
+const lat = EXIF.getTag(this, "GPSLatitude");
+const lon = EXIF.getTag(this, "GPSLongitude");
+const latRef = EXIF.getTag(this, "GPSLatitudeRef");
+const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
+
+if(lat && lon && latRef && lonRef){
+  imageHasLocation = true;
+
+  const latDec = dmsToDecimal(lat, latRef);
+  const lonDec = dmsToDecimal(lon, lonRef);
+
+  imageLocationText =
+    `📍 緯度 ${latDec.toFixed(5)}, 経度 ${lonDec.toFixed(5)}`;
+
+  exifBox.innerHTML = imageLocationText;
+}
+
+
+
+  });
+}
 
 
 
@@ -1752,17 +1962,8 @@ function receiveNewDM(){
 
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
