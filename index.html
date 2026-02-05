@@ -1956,77 +1956,150 @@ const empathicSNS = {
   ]
 };
 
+// ===== 炎上後半：誹謗中傷・攻撃強化 =====
+const flameSNS = {
+  // ① 断定・決めつけ
+  judge: [
+    "これは完全にアウト。",
+    "どう見ても問題ある発言。",
+    "言い訳できないでしょ。",
+    "普通に差別だと思う。",
+    "一線越えてる。"
+  ],
 
+  // ② 人格・能力攻撃
+  attack: [
+    "考え方が幼すぎる。",
+    "その程度の理解力なんだ。",
+    "想像力なさすぎ。",
+    "人としてどうかと思う。",
+    "知識なさすぎて怖い。"
+  ],
 
+  // ③ 上から目線の説教
+  lecture: [
+    "少しは調べてから発言したら？",
+    "その発言がどう見られるか考えて。",
+    "ネットに書く前に考えよう。",
+    "大人なら分かるよね。",
+    "発信の重さ理解してる？"
+  ],
+
+  // ④ 集団化・正義化
+  mob: [
+    "みんな言ってるけどさ。",
+    "擁護してる人いなくない？",
+    "これ許されると思ってる？",
+    "もう終わりでしょ。",
+    "完全にやらかした案件。"
+  ],
+
+  // ⑤ 通報・晒し予告
+  sanction: [
+    "通報しました。",
+    "スクショ残しておきます。",
+    "関係先に連絡した方がいいやつ。",
+    "これは消しても無理。",
+    "魚拓取った。"
+  ]
+};
+
+let recentComments = [];
 
 function generateSmartComment(text){
   const f = analyzePostText(text);
-  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+  
+const pickFresh = arr => {
+    const candidates = arr.filter(c => !recentComments.includes(c));
+    const choice = (candidates.length ? candidates : arr)
+      [Math.floor(Math.random() * (candidates.length || arr.length))];
+
+    recentComments.push(choice);
+    if(recentComments.length > 5) recentComments.shift();
+
+    return choice;
+  };
 
   // ===== 強い不適切語（既存そのまま）=====
   if(f.severe){
     let parts = [];
 
     if(Math.random() < 0.2){
-      return pick(severeSNS.shortDry);
+      return pickFresh(severeSNS.shortDry);
     }
     if(Math.random() < 0.4){
       parts.push(
-        pick(Math.random() < 0.5 ? severeSNS.short : severeSNS.peer)
+        pickFresh(Math.random() < 0.5 ? severeSNS.short : severeSNS.peer)
       );
     }
     if(Math.random() < 0.6){
       parts.push(
-        pick(Math.random() < 0.5 ? severeSNS.tired : severeSNS.cold)
+        pickFresh(Math.random() < 0.5 ? severeSNS.tired : severeSNS.cold)
       );
     }
+
     if(Math.random() < 0.3){
       parts.push(
-        pick(Math.random() < 0.5 ? severeSNS.distance : severeSNS.shrug)
+        pickFresh(Math.random() < 0.5 ? severeSNS.distance : severeSNS.shrug)
       );
     }
+// ★ 炎上の進行度で役割を変える
+if (Math.random() < 0.6) {
+
+  let flamePool;
+
+  if (state.severity < 25) {
+    flamePool = flameSNS.judge;
+  } else if (state.severity < 45) {
+    flamePool = flameSNS.attack;
+  } else if (state.severity < 65) {
+    flamePool = flameSNS.lecture;
+  } else if (state.severity < 85) {
+    flamePool = flameSNS.mob;
+  } else {
+    flamePool = flameSNS.sanction;
+  }
+
+  parts.push(pickFresh(flamePool));
+}
+
     return parts.join(" ");
   }
 
-  // ===== 通常投稿：SNS口調 =====
-  if(Math.random() < 0.25){
-    return pick(casualSNS.short);
-  }
+// ===== 通常投稿：SNS口調（修正版） =====
 
-  if(f.lengthShort && Math.random() < 0.6){
-    return pick(casualSNS.light);
-  }
-
-  if(f.emotionStrong){
-    return pick(casualSNS.chill);
-  }
-
-  return pick(casualSNS.dry);
-
-
-
-if(f.relatable && Math.random() < 0.3){
-  return pick(
+// ① 共感・同調（最優先）
+if(f.relatable && Math.random() < 0.35){
+  return pickFresh(
     Math.random() < 0.4 ? empathicSNS.echo :
     Math.random() < 0.7 ? empathicSNS.light :
                           empathicSNS.strong
   );
 }
 
-// 軽いツッコミ
+// ② 超短文リアクション（流し読み感）
+if(Math.random() < 0.2){
+  return pickFresh(casualSNS.dry);
+}
+
+// ③ 軽いツッコミ
 if(Math.random() < 0.25){
-  return pick(casualSNS.short);
+  return pickFresh(casualSNS.short);
 }
 
+// ④ 短文投稿への補足
 if(f.lengthShort && Math.random() < 0.6){
-  return pick(casualSNS.light);
+  return pickFresh(casualSNS.light);
 }
 
+// ⑤ 感情強め → 受け止め
 if(f.emotionStrong){
-  return pick(casualSNS.chill);
+  return pickFresh(casualSNS.chill);
 }
 
-return pick(casualSNS.dry);
+// ⑥ 最後の逃げ道
+return pickFresh(casualSNS.dry);
+
 
   
 }
